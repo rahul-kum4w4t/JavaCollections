@@ -7,10 +7,8 @@ import java.util.stream.Stream;
 
 /**
  * Hello world!
- *
  */
-public class App 
-{
+public class App {
     public static void main(String[] args) {
         /**
          * Simple Binary Tree Tests
@@ -33,25 +31,25 @@ public class App
         tree = App.getCompleteLinkBinaryTree();
 
         Iterator<Integer> it = tree.levelOrderIterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             System.out.print(it.next() + ", ");
         }
         System.out.println();
 
         it = tree.inOrderIterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             System.out.print(it.next() + ", ");
         }
         System.out.println();
 
         it = tree.preOrderIterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             System.out.print(it.next() + ", ");
         }
         System.out.println();
 
         it = tree.postOrderIterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             System.out.print(it.next() + ", ");
         }
         System.out.println();
@@ -61,7 +59,7 @@ public class App
          * For each with default pre order traversal
          */
         System.out.println("\n\n---------------- For Loop check ---------------");
-        for(int i : tree){
+        for (int i : tree) {
             System.out.print(i + ", ");
         }
 
@@ -77,10 +75,23 @@ public class App
          */
         System.out.println("\n\n---------------- Stream check ---------------");
         tree.stream().forEach(i -> System.out.print(i + ", "));
+
+
+        //------------------------------------------------------------------------------------------------
+
+        /**
+         * LinkBinarySearchTree
+         */
+        System.out.println("\n\n---------------- BST ---------------");
+        LinkBinarySearchTree<Integer> bst = new LinkBinarySearchTree<>();
+        IntStream.of(4, 2, 19, 11, 7, 6, 13, 5, 1, 14, 3, 15, 12, 9, 18, 8).forEach(bst::add);
+        bst.remove(11);
+        System.out.println("Tree height : "+bst.getHeight());
+        printTraversals(bst);
     }
 
-    public static void printTraversals(LinkBinaryTree<Integer> tree){
-        Consumer<BinaryTreeNode<?>> disp = node -> System.out.print(((BinaryTreeNode<Integer>)node).getData()+", ");
+    public static void printTraversals(LinkBinaryTree<Integer> tree) {
+        Consumer<BinaryTreeNode<?>> disp = node -> System.out.print(((BinaryTreeNode<Integer>) node).getData() + ", ");
         System.out.print("Level Order Traversal: ");
         Stream.of(tree.levelOrder()).forEach(disp);
         System.out.print("\nIn Order Traversal: ");
@@ -91,13 +102,13 @@ public class App
         Stream.of(tree.postOrder()).forEach(disp);
     }
 
-    public static LinkBinaryTree<Integer> getCompleteLinkBinaryTree(){
+    public static LinkBinaryTree<Integer> getCompleteLinkBinaryTree() {
         LinkBinaryTree<Integer> tree = new LinkBinaryTree<>();
-        IntStream.range(1,32).forEach(val -> tree.add(val));
+        IntStream.range(1, 32).forEach(val -> tree.add(val));
         return tree;
     }
 
-    public static LinkBinaryTree<Integer> getLeftSkewedLinkBinaryTree(){
+    public static LinkBinaryTree<Integer> getLeftSkewedLinkBinaryTree() {
         LinkBinaryTree<Integer> tree = new LinkBinaryTree<>();
 
         BinaryTreeNode<Integer> node = new BinaryTreeNode<>(1);
@@ -131,7 +142,7 @@ public class App
         return tree;
     }
 
-    public static LinkBinaryTree<Integer> getRightSkewedLinkBinaryTree(){
+    public static LinkBinaryTree<Integer> getRightSkewedLinkBinaryTree() {
         LinkBinaryTree<Integer> tree = new LinkBinaryTree<>();
 
         BinaryTreeNode<Integer> node = new BinaryTreeNode<>(1);
