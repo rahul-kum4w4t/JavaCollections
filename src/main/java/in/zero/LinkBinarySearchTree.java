@@ -22,7 +22,8 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
                 node.setRight(newNode);
             }
         } else {
-            this.root = new BinaryTreeNode<>(value);
+            newNode = new BinaryTreeNode<>(value);
+            this.root = newNode;
         }
         nodesCount++;
         return newNode;
@@ -116,28 +117,31 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
     }
 
     int getHeightOfNode(BinaryTreeNode<T> node) {
-        int level = 0;
+        int level = -1;
         if (node != null) {
-            BinaryTreeNode<T>[] stack = new BinaryTreeNode[nodesCount];
-            stack[0] = node;
-            int bottom = 0;
-            int top = 1;
-            int counter;
-            level = -1;
-            while (bottom < top) {
-                counter = 0;
+            if (!node.hasChildren()) {
+                return 0;
+            } else {
+                BinaryTreeNode<T>[] stack = new BinaryTreeNode[nodesCount];
+                stack[0] = node;
+                int bottom = 0;
+                int top = 1;
+                int counter;
                 while (bottom < top) {
-                    node = stack[bottom++];
-                    if (node.hasLeft()) {
-                        stack[top + (counter++)] = node.getLeft();
+                    counter = 0;
+                    while (bottom < top) {
+                        node = stack[bottom++];
+                        if (node.hasLeft()) {
+                            stack[top + (counter++)] = node.getLeft();
+                        }
+                        if (node.hasRight()) {
+                            stack[top + (counter++)] = node.getRight();
+                        }
                     }
-                    if (node.hasRight()) {
-                        stack[top + (counter++)] = node.getRight();
-                    }
+                    bottom = top;
+                    top += counter;
+                    level++;
                 }
-                bottom = top;
-                top += counter;
-                level++;
             }
         }
         return level;

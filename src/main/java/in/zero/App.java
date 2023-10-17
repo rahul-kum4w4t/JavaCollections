@@ -10,6 +10,13 @@ import java.util.stream.Stream;
  */
 public class App {
     public static void main(String[] args) {
+
+        testBinaryTree();
+        testBST();
+        testAVLTree();
+    }
+
+    public static void testBinaryTree() {
         /**
          * Simple Binary Tree Tests
          */
@@ -22,8 +29,6 @@ public class App {
         LinkBinaryTree<Integer> rightTree = getLeftSkewedLinkBinaryTree();
         System.out.println("\n\n----------- Right Skewed Binary Tree ---------------");
         printTraversals(rightTree);
-
-
         /**
          * Iterator tests
          */
@@ -53,8 +58,6 @@ public class App {
             System.out.print(it.next() + ", ");
         }
         System.out.println();
-
-
         /**
          * For each with default pre order traversal
          */
@@ -62,23 +65,19 @@ public class App {
         for (int i : tree) {
             System.out.print(i + ", ");
         }
-
         /**
          * forEach check
          */
         System.out.println("\n\n---------------- forEach check ---------------");
         tree.forEach(i -> System.out.print(i + ", "));
-
-
         /**
          * Stream check
          */
         System.out.println("\n\n---------------- Stream check ---------------");
         tree.stream().forEach(i -> System.out.print(i + ", "));
+    }
 
-
-        //------------------------------------------------------------------------------------------------
-
+    public static void testBST() {
         /**
          * LinkBinarySearchTree
          */
@@ -86,8 +85,20 @@ public class App {
         LinkBinarySearchTree<Integer> bst = new LinkBinarySearchTree<>();
         IntStream.of(4, 2, 19, 11, 7, 6, 13, 5, 1, 14, 3, 15, 12, 9, 18, 8).forEach(bst::add);
         bst.remove(11);
-        System.out.println("Tree height : "+bst.getHeight());
+        System.out.println("Tree height : " + bst.getHeight());
         printTraversals(bst);
+    }
+
+    public static void testAVLTree() {
+        System.out.println("\n\n------------ AVL tree ----------------- ");
+        LinkAVLTree<Integer> avl = new LinkAVLTree<>();
+        try {
+            avl.addAll(10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 71, 35);
+            printTraversals(avl);
+        } catch (Exception e) {
+            e.printStackTrace();
+            printTraversals(avl);
+        }
     }
 
     public static void printTraversals(LinkBinaryTree<Integer> tree) {
