@@ -5,41 +5,39 @@ public class LinkAVLTree<T extends Comparable<T>> extends LinkBinarySearchTree<T
     @Override
     public LinkAVLTree<T> add(T val) {
         if (val != null) {
-            BinaryTreeNode<T> newNode = this.addNode(val);
-            BinaryTreeNode<T> node = newNode.getParent(); // Parent Node
-            int leftHeight, rightHeight, height = 1; // Because from newNode to its parent height is 1
-            int grandDir = 0, childDir = 0, greatDir = 0;
+            AVLTreeNode<T> newNode = (AVLTreeNode<T>) this.addNode(val);
+            newNode.height = 0;
+            AVLTreeNode<T> node = (AVLTreeNode<T>) newNode.parent; // Parent Node
+            int leftHeight, rightHeight; // Because from newNode to its parent height is 1
+            int grandDir, childDir, greatDir;
             if (node != null) { // Parent is not null
-                if (node.getLeft() == newNode) {
+                node.updateHeight();
+                if (node.left == newNode) {
                     grandDir = -1;
                 } else {
                     grandDir = 1;
                 }
                 greatDir = grandDir;
                 newNode = node;
-                node = node.getParent();
+                node = (AVLTreeNode<T>) node.parent;
                 while (node != null) {
-                    if (node.getLeft() == newNode) {
+                    node.updateHeight();
+                    if (node.left == newNode) {
                         childDir = -1;
+                        leftHeight = ((AVLTreeNode<T>) node.left).height;
+                        rightHeight = node.hasRight() ? ((AVLTreeNode<T>) node.right).height : -1;
                     } else {
                         childDir = 1;
-                    }
-                    if (childDir == -1) {
-                        leftHeight = height;
-                        rightHeight = this.getHeightOfNode(node.getRight());
-                    } else {
-                        rightHeight = height;
-                        leftHeight = this.getHeightOfNode(node.getLeft());
+                        rightHeight = ((AVLTreeNode<T>) node.right).height;
+                        leftHeight = node.hasLeft() ? ((AVLTreeNode<T>) node.left).height : -1;
                     }
                     if (Math.abs(leftHeight - rightHeight) == 2) {
-                        this.rotate(node, childDir, grandDir, greatDir);
-                        node = null;
+                        node = this.rotate(node, childDir, grandDir, greatDir);
                     } else {
                         newNode = node;
-                        node = node.getParent();
+                        node = (AVLTreeNode<T>) node.parent;
                         greatDir = grandDir;
                         grandDir = childDir;
-                        height = leftHeight > rightHeight ? leftHeight + 1 : rightHeight + 1;
                     }
                 }
             }
@@ -52,39 +50,22 @@ public class LinkAVLTree<T extends Comparable<T>> extends LinkBinarySearchTree<T
         return false;
     }
 
-    private void rotate(BinaryTreeNode<T> node, int childDir, int grandDir, int greatDir) {
-        System.out.println("Rotate: " + node.getData() + ", " + childDir + ", " + grandDir + ", " + greatDir);
-        BinaryTreeNode<T> child = childDir == -1 ? node.getLeft() : node.getRight();
-        BinaryTreeNode<T> parent = node.getParent();
-        if (childDir != grandDir) {
-            rotate(child, grandDir, greatDir, greatDir);
-            child = childDir == -1 ? node.getLeft() : node.getRight();
-        }
-        child.setParent(parent);
-        node.setParent(child);
-        if (parent != null) {
-            if (parent.getLeft() == node) {
-                parent.setLeft(child);
-            } else {
-                parent.setRight(child);
-            }
-        }
-        if (childDir == -1) {
-            node.setLeft(child.getRight());
-            child.setRight(node);
-            if (node.hasLeft()) {
-                node.getLeft().setParent(node);
-            }
-        } else {
-            node.setRight(child.getLeft());
-            child.setLeft(node);
-            if (node.hasRight()) {
-                node.getRight().setParent(node);
-            }
-        }
-        if (parent == null) {
-            this.root = child;
-        }
-        System.out.println("Rotate: " + node.getData() +" completed");
+    @Override
+    AVLTreeNode<T> createNewNode(T value, BinaryTreeNode<T> parent) {
+        AVLTreeNode<T> newNode = new AVLTreeNode<>(value);
+        newNode.parent = parent;
+        return newNode;
+    }
+
+    @Override
+    AVLTreeNode<T> rotate(BinaryTreeNode<T> node, int childDir, int grandDir, int greatDir) {
+        AVLTreeNode<T> newNode = (AVLTreeNode<T>) super.rotate(node, childDir, grandDir, greatDir);
+        ((AVLTreeNode<T>) node).updateHeight();
+        return newNode;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.root != null ? ((AVLTreeNode<T>) this.root).height : -1;
     }
 }

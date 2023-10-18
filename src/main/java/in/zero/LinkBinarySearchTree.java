@@ -11,21 +11,27 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
     }
 
     BinaryTreeNode<T> addNode(T value) {
-        BinaryTreeNode<T> newNode = null;
+        BinaryTreeNode<T> newNode;
         if (root != null) {
             BinaryTreeNode<T> node = searchNodePlace(value);
-            newNode = new BinaryTreeNode<>(value, node);
-            int comp = node.getData().compareTo(value);
+            newNode = createNewNode(value, node);
+            int comp = node.data.compareTo(value);
             if (comp > 0) {
-                node.setLeft(newNode);
+                node.left = newNode;
             } else if (comp < 0) {
-                node.setRight(newNode);
+                node.right = newNode;
             }
         } else {
-            newNode = new BinaryTreeNode<>(value);
+            newNode = createNewNode(value, null);
             this.root = newNode;
         }
         nodesCount++;
+        return newNode;
+    }
+
+    BinaryTreeNode<T> createNewNode(T value, BinaryTreeNode<T> parent) {
+        BinaryTreeNode<T> newNode = new BinaryTreeNode<>(value);
+        newNode.parent = parent;
         return newNode;
     }
 
@@ -33,49 +39,49 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
     public boolean remove(T value) {
         BinaryTreeNode<T> node = searchNode(value);
         if (node != null) {
-            BinaryTreeNode<T> parent = node.getParent();
+            BinaryTreeNode<T> parent = node.parent;
             if (node.hasLeft()) {
                 if (node.hasRight()) {
                     BinaryTreeNode<T> inOrderPred = inOrderPredecessor(node);
-                    node.setData(inOrderPred.getData());
-                    parent = inOrderPred.getParent();
-                    inOrderPred.setParent(null);
+                    node.data = inOrderPred.data;
+                    parent = inOrderPred.parent;
+                    inOrderPred.parent = null;
                     if (inOrderPred.hasLeft()) {
-                        parent.setRight(inOrderPred.getLeft());
+                        parent.right = inOrderPred.left;
                     } else {
-                        parent.setRight(null);
+                        parent.right = null;
                     }
                 } else {
                     if (parent != null) {
-                        if (parent.getLeft() == node) {
-                            parent.setLeft(node.getLeft());
+                        if (parent.left == node) {
+                            parent.left = node.left;
                         } else {
-                            parent.setRight(node.getLeft());
+                            parent.right = node.left;
                         }
                     } else {
-                        this.root = node.getLeft();
-                        node.setLeft(null);
+                        this.root = node.left;
+                        node.left = null;
                     }
                 }
             } else {
                 if (node.hasRight()) {
                     if (parent != null) {
-                        if (parent.getLeft() == node) {
-                            parent.setLeft(node.getRight());
+                        if (parent.left == node) {
+                            parent.left = node.right;
                         } else {
-                            parent.setRight(node.getRight());
+                            parent.right = node.right;
                         }
                     } else {
-                        this.root = node.getRight();
-                        node.setRight(null);
+                        this.root = node.right;
+                        node.right = null;
                     }
                 } else {
                     if (parent != null) {
-                        node.setParent(null);
-                        if (parent.getLeft() == node) {
-                            parent.setLeft(null);
+                        node.parent = null;
+                        if (parent.left == node) {
+                            parent.left = null;
                         } else {
-                            parent.setRight(null);
+                            parent.right = null;
                         }
                     } else {
                         this.root = null;
@@ -98,11 +104,11 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
             BinaryTreeNode<T> node = this.root;
             int comp = 0;
             while (node != null) {
-                comp = node.getData().compareTo(value);
+                comp = node.data.compareTo(value);
                 if (comp > 0) {
-                    node = node.getLeft();
+                    node = node.left;
                 } else if (comp < 0) {
-                    node = node.getRight();
+                    node = node.right;
                 } else {
                     return node;
                 }
@@ -113,10 +119,7 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
 
     @Override
     public int getHeight() {
-        return getHeightOfNode(this.root);
-    }
-
-    int getHeightOfNode(BinaryTreeNode<T> node) {
+        BinaryTreeNode<T> node = this.root;
         int level = -1;
         if (node != null) {
             if (!node.hasChildren()) {
@@ -132,10 +135,10 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
                     while (bottom < top) {
                         node = stack[bottom++];
                         if (node.hasLeft()) {
-                            stack[top + (counter++)] = node.getLeft();
+                            stack[top + (counter++)] = node.left;
                         }
                         if (node.hasRight()) {
-                            stack[top + (counter++)] = node.getRight();
+                            stack[top + (counter++)] = node.right;
                         }
                     }
                     bottom = top;
@@ -147,17 +150,16 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
         return level;
     }
 
-
     BinaryTreeNode<T> searchNodePlace(T value) {
         BinaryTreeNode<T> node = this.root;
         int comp = 0;
         while (node != null) {
-            comp = node.getData().compareTo(value);
+            comp = node.data.compareTo(value);
             if (comp > 0) {
-                if (node.hasLeft()) node = node.getLeft();
+                if (node.hasLeft()) node = node.left;
                 else return node;
             } else if (comp < 0) {
-                if (node.hasRight()) node = node.getRight();
+                if (node.hasRight()) node = node.right;
                 else return node;
             } else {
                 throw new IllegalArgumentException("BST can't accept duplicate values");
@@ -167,10 +169,46 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
     }
 
     BinaryTreeNode<T> inOrderPredecessor(BinaryTreeNode<T> node) {
-        node = node.getLeft();
+        node = node.left;
         while (node.hasRight()) {
-            node = node.getRight();
+            node = node.right;
         }
         return node;
+    }
+
+    BinaryTreeNode<T> rotate(BinaryTreeNode<T> node, int childDir, int grandDir, int greatDir) {
+        //System.out.println("Rotate: " + node.data + ", " + childDir + ", " + grandDir + ", " + greatDir);
+        BinaryTreeNode<T> child = childDir == -1 ? node.left : node.right;
+        BinaryTreeNode<T> parent = node.parent;
+
+        if (childDir != grandDir) child = rotate(child, grandDir, greatDir, greatDir);
+
+        child.parent = parent;
+        node.parent = child;
+        if (parent != null) {
+            if (parent.left == node) {
+                parent.left = child;
+            } else {
+                parent.right = child;
+            }
+        }
+        if (childDir == -1) {
+            node.left = child.right;
+            child.right = node;
+            if (node.hasLeft()) {
+                node.left.parent = node;
+            }
+        } else {
+            node.right = child.left;
+            child.left = node;
+            if (node.hasRight()) {
+                node.right.parent = node;
+            }
+        }
+        if (parent == null) {
+            this.root = child;
+        }
+        return child;
+        //System.out.println("Rotate: " + node.data + " completed");
     }
 }

@@ -27,7 +27,7 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
 
         @Override
         public T next() {
-            if (hasNext()) return nodes[index++].getData();
+            if (hasNext()) return nodes[index++].data;
             else throw new NoSuchElementException("Iterator exhausted");
         }
     }
@@ -40,9 +40,9 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
     public LinkBinaryTree<T> add(T value) {
         BinaryTreeNode<T> lastNode = getLastVacantNode();
         if (lastNode != null) {
-            BinaryTreeNode<T> newNode = new BinaryTreeNode<>(value, lastNode);
-            if (!lastNode.hasLeft()) lastNode.setLeft(newNode);
-            else lastNode.setRight(newNode);
+            BinaryTreeNode<T> newNode = createNewNode(value, lastNode);//new BinaryTreeNode<>(value, lastNode);
+            if (!lastNode.hasLeft()) lastNode.left = newNode;
+            else lastNode.right = newNode;
         } else {
             root = new BinaryTreeNode<>(value);
         }
@@ -63,24 +63,24 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
                 } else {
                     BinaryTreeNode<T>[] level = levelOrder();
                     BinaryTreeNode<T> lastNode = level[level.length - 1];
-                    BinaryTreeNode<T> parent = lastNode.getParent();
-                    if (parent.getLeft() == lastNode) {
-                        parent.setLeft(null);
+                    BinaryTreeNode<T> parent = lastNode.parent;
+                    if (parent.left == lastNode) {
+                        parent.left = null;
                     } else {
-                        parent.setRight(null);
+                        parent.right = null;
                     }
 
-                    parent = node.getParent();
+                    parent = node.parent;
                     if (parent != null) {
-                        lastNode.setParent(parent);
-                        if (parent.getLeft() == node) {
-                            parent.setLeft(lastNode);
+                        lastNode.parent = parent;
+                        if (parent.left == node) {
+                            parent.left = lastNode;
                         } else {
-                            parent.setRight(lastNode);
+                            parent.right = lastNode;
                         }
-                        node.setParent(null);
+                        node.parent = null;
                     } else {
-                        lastNode.setParent(null);
+                        lastNode.parent = null;
                     }
                 }
                 nodesCount--;
@@ -137,10 +137,10 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
                     return elements[i];
                 }
                 if (elements[i].hasLeft()) {
-                    elements[curr++] = elements[i].getLeft();
+                    elements[curr++] = elements[i].left;
                 }
                 if (elements[i].hasRight()) {
-                    elements[curr++] = elements[i].getRight();
+                    elements[curr++] = elements[i].right;
                 }
             }
         }
@@ -156,8 +156,8 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
                 if (!elements[i].hasLeft() || !elements[i].hasRight()) {
                     return elements[i];
                 } else {
-                    elements[curr++] = elements[i].getLeft();
-                    elements[curr++] = elements[i].getRight();
+                    elements[curr++] = elements[i].left;
+                    elements[curr++] = elements[i].right;
                 }
             }
             return elements[curr - 1];
@@ -172,10 +172,10 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
             int curr = 1;
             for (int i = 0; i < nodesCount; i++) {
                 if (elements[i].hasLeft()) {
-                    elements[curr++] = elements[i].getLeft();
+                    elements[curr++] = elements[i].left;
                 }
                 if (elements[i].hasRight()) {
-                    elements[curr++] = elements[i].getRight();
+                    elements[curr++] = elements[i].right;
                 }
             }
             return elements;
@@ -196,12 +196,12 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
                     if (node.hasRight()) {
                         stack[stackPointer++] = node;
                     }
-                    node = node.getLeft();
+                    node = node.left;
                 } else if (node.hasRight()) {
-                    node = node.getRight();
+                    node = node.right;
                 } else {
                     stackPointer--;
-                    node = stackPointer >= 0 ? stack[stackPointer].getRight() : null;
+                    node = stackPointer >= 0 ? stack[stackPointer].right : null;
                 }
             }
             return preordered;
@@ -222,12 +222,12 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
                     if (node.hasLeft()) {
                         stack[stackPointer++] = node;
                     }
-                    node = node.getRight();
+                    node = node.right;
                 } else if (node.hasLeft()) {
-                    node = node.getLeft();
+                    node = node.left;
                 } else {
                     stackPointer--;
-                    node = stackPointer >= 0 ? stack[stackPointer].getLeft() : null;
+                    node = stackPointer >= 0 ? stack[stackPointer].left : null;
                 }
             }
             return postordered;
@@ -245,10 +245,10 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
             while (stackPointer >= 0) {
                 if (node.hasLeft()) {
                     stack[stackPointer++] = node;
-                    node = node.getLeft();
+                    node = node.left;
                 } else if (node.hasRight()) {
                     inorder[count++] = node;
-                    node = node.getRight();
+                    node = node.right;
                 } else {
                     inorder[count++] = node;
                     while (stackPointer > 0 && !node.hasRight()) {
@@ -257,7 +257,7 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
                         stackPointer--;
                     }
                     if (node.hasRight()) {
-                        node = node.getRight();
+                        node = node.right;
                     } else {
                         stackPointer--;
                     }
@@ -266,5 +266,11 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
             return inorder;
         }
         return null;
+    }
+
+    BinaryTreeNode<T> createNewNode(T value, BinaryTreeNode<T> parent) {
+        BinaryTreeNode<T> newNode = new BinaryTreeNode<>(value);
+        newNode.parent = parent;
+        return newNode;
     }
 }
