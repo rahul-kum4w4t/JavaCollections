@@ -1,15 +1,25 @@
-package in.zero;
+package in.zero.collection;
 
+/**
+ * Extension of Binary Tree Node with AVL tree specific functionalities
+ * @param <T>
+ */
 class AVLTreeNode<T> extends BinaryTreeNode<T> {
 
+    /**
+     * Param constructor
+     * @param value
+     */
     AVLTreeNode(T value) {
         super(value);
     }
 
     int height;
 
-    boolean updateHeight() {
-        final int height = this.height;
+    /**
+     * Updates height of any node based on its child nodes
+     */
+    void updateHeight() {
         if (this.hasLeft()) {
             AVLTreeNode<T> left = (AVLTreeNode<T>) this.left;
             if (this.hasRight()) {
@@ -26,9 +36,12 @@ class AVLTreeNode<T> extends BinaryTreeNode<T> {
                 this.height = 0;
             }
         }
-        return this.height != height;
     }
 
+    /**
+     * AVL node specific implementation
+     * @return String
+     */
     @Override
     public String toString() {
         return String.format("%s:%s", data, height);

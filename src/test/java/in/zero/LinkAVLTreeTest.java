@@ -1,5 +1,6 @@
 package in.zero;
 
+import in.zero.collection.LinkAVLTree;
 import junit.framework.TestCase;
 
 public class LinkAVLTreeTest extends TestCase {

@@ -1,5 +1,9 @@
-package in.zero;
+package in.zero.collection;
 
+/**
+ * Node to store any value in the Binary trees
+ * @param <T> Object of particular concern
+ */
 class BinaryTreeNode<T> {
 
     BinaryTreeNode<T> left;
@@ -8,12 +12,12 @@ class BinaryTreeNode<T> {
 
     T data;
 
+    /**
+     * Param constructor
+     * @param data
+     */
     BinaryTreeNode(T data) {
         this.data = data;
-    }
-
-    boolean hasChildren() {
-        return left != null || right != null;
     }
 
     boolean hasLeft() {

@@ -1,4 +1,4 @@
-package in.zero;
+package in.zero.collection;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -6,11 +6,21 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-
+/**
+ * A tree where each node holds two child nodes
+ * Provide ways to iterate and traverse the value inside a binary tree
+ *
+ * @param <T> Any object which we want to store inside a tree
+ */
 public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
     BinaryTreeNode<T> root;
     int nodesCount = 0;
 
+    /**
+     * Custom iterator to iterate values of any Binary Tree
+     *
+     * @param <T> Any object which we want to store inside a tree
+     */
     private static class BinaryTreeIterator<T> implements Iterator<T> {
 
         private final BinaryTreeNode<T>[] nodes;
@@ -32,11 +42,23 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
         }
     }
 
+    /**
+     * Add all the values provided
+     *
+     * @param values Values to be added
+     * @return reference to the tree
+     */
     public LinkBinaryTree<T> addAll(T... values) {
         Arrays.stream(values).forEach(this::add);
         return this;
     }
 
+    /**
+     * Add a value to the tree
+     *
+     * @param value Value to be added
+     * @return Reference to the tree
+     */
     public LinkBinaryTree<T> add(T value) {
         BinaryTreeNode<T> lastNode = getLastVacantNode();
         if (lastNode != null) {
@@ -50,11 +72,23 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
         return this;
     }
 
-    public Boolean[] removeAll(T... values) {
-        return (Boolean[]) Arrays.stream(values).map(this::add).toArray();
+    /**
+     * Remove all the elements provided
+     *
+     * @param values Values to be removed
+     * @return Array of all the removed values
+     */
+    public T[] removeAll(T... values) {
+        return (T[]) Arrays.stream(values).map(this::add).toArray();
     }
 
-    public boolean remove(T value) {
+    /**
+     * Remove any single value from the tree
+     *
+     * @param value Value to be removed
+     * @return Removed element
+     */
+    public T remove(T value) {
         if (nodesCount > 0) {
             BinaryTreeNode<T> node = searchNode(value);
             if (node != null) {
@@ -84,49 +118,97 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
                     }
                 }
                 nodesCount--;
-                return true;
+                return value;
             }
         }
-        return false;
+        return null;
     }
 
+    /**
+     * Calculates and gives back the height og Binary tree
+     *
+     * @return height of the tree
+     */
     public int getHeight() {
         return (int) Math.floor(Math.log(nodesCount) / Math.log(2));
     }
 
+    /**
+     * Iterator which is required to traverse all the elements in a tree
+     * In order elements will be iterated
+     *
+     * @return iterator object
+     */
     @Override
     public Iterator<T> iterator() {
-        return new BinaryTreeIterator<>(preOrder());
+        return new BinaryTreeIterator<>(inOrder());
     }
 
+    /**
+     * Level Order iterator which is required to traverse all the elements in a tree
+     *
+     * @return iterator object
+     */
     @Override
     public Iterator<T> levelOrderIterator() {
         return new BinaryTreeIterator<>(levelOrder());
     }
 
+    /**
+     * Pre Order iterator which is required to traverse all the elements in a tree
+     *
+     * @return iterator object
+     */
     @Override
     public Iterator<T> preOrderIterator() {
         return new BinaryTreeIterator<>(preOrder());
     }
 
+    /**
+     * In Order iterator which is required to traverse all the elements in a tree
+     *
+     * @return iterator object
+     */
     @Override
     public Iterator<T> inOrderIterator() {
         return new BinaryTreeIterator<>(inOrder());
     }
 
+    /**
+     * Post Order iterator which is required to traverse all the elements in a tree
+     *
+     * @return iterator object
+     */
     @Override
     public Iterator<T> postOrderIterator() {
         return new BinaryTreeIterator<>(postOrder());
     }
 
+    /**
+     * Create a Java 1.8 stream object to traverse all the tree elements
+     *
+     * @return iterator object
+     */
     public Stream<T> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
 
+    /**
+     * Searches any element in the tree
+     *
+     * @param value Value to be searched
+     * @return true/false ~ found/notfound
+     */
     public boolean search(T value) {
         return searchNode(value) != null;
     }
 
+    /**
+     * Searches a value and returns the respective node
+     *
+     * @param value Value to be searched
+     * @return Found node
+     */
     BinaryTreeNode<T> searchNode(T value) {
         if (root != null) {
             BinaryTreeNode<T>[] elements = new BinaryTreeNode[nodesCount];
@@ -147,6 +229,11 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
         return null;
     }
 
+    /**
+     * Get the last vacant node where new value can be inserted
+     *
+     * @return Last vacant node
+     */
     private BinaryTreeNode<T> getLastVacantNode() {
         if (root != null) {
             BinaryTreeNode<T>[] elements = new BinaryTreeNode[nodesCount];
@@ -165,6 +252,11 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
         return null;
     }
 
+    /**
+     * Provides an array of level order traversed nodes for the tree
+     *
+     * @return array of nodes
+     */
     BinaryTreeNode<T>[] levelOrder() {
         if (root != null) {
             BinaryTreeNode<T>[] elements = new BinaryTreeNode[nodesCount];
@@ -183,6 +275,11 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
         return null;
     }
 
+    /**
+     * Provides an array of pre order traversed nodes for the tree
+     *
+     * @return array of nodes
+     */
     BinaryTreeNode<T>[] preOrder() {
         if (root != null) {
             BinaryTreeNode<T> node = root;
@@ -209,6 +306,11 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
         return null;
     }
 
+    /**
+     * Provides an array of post order traversed nodes for the tree
+     *
+     * @return array of nodes
+     */
     BinaryTreeNode<T>[] postOrder() {
         if (root != null) {
             BinaryTreeNode<T> node = root;
@@ -235,6 +337,11 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
         return null;
     }
 
+    /**
+     * Provides an array of In order traversed nodes for the tree
+     *
+     * @return array of nodes
+     */
     BinaryTreeNode<T>[] inOrder() {
         if (root != null) {
             BinaryTreeNode<T> node = root;
@@ -268,9 +375,25 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
         return null;
     }
 
+    /**
+     * Creates a new node with provide values
+     *
+     * @param value  Value to be inserted in the new node
+     * @param parent Parent which links to the new node
+     * @return newely created node
+     */
     BinaryTreeNode<T> createNewNode(T value, BinaryTreeNode<T> parent) {
         BinaryTreeNode<T> newNode = new BinaryTreeNode<>(value);
         newNode.parent = parent;
         return newNode;
+    }
+
+    /**
+     * Get the number of values stored inside the tree at any point of time
+     *
+     * @return no of values
+     */
+    public int size() {
+        return nodesCount;
     }
 }

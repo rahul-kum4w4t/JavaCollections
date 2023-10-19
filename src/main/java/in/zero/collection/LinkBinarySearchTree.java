@@ -1,42 +1,73 @@
-package in.zero;
+package in.zero.collection;
 
+/**
+ * A type of Binary tree where values get stored in sorted order
+ * Uses link list as base for implementation
+ * undefined capacity to store values
+ *
+ * @param <T> Comparable objects which can be stored
+ */
 public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTree<T> {
 
+    /**
+     * Add a value to the tree
+     *
+     * @param value value to be added
+     * @return reference to the tree
+     */
     @Override
     public LinkBinarySearchTree<T> add(T value) {
-        if (value != null) {
-            this.addNode(value);
-        }
+        this.addNode(value);
         return this;
     }
 
+    /**
+     * Internal method which adds a value to the tree and returns the new node
+     *
+     * @param value value to be added
+     * @return new node which holds the inserted value
+     */
     BinaryTreeNode<T> addNode(T value) {
-        BinaryTreeNode<T> newNode;
-        if (root != null) {
-            BinaryTreeNode<T> node = searchNodePlace(value);
-            newNode = createNewNode(value, node);
-            int comp = node.data.compareTo(value);
-            if (comp > 0) {
-                node.left = newNode;
-            } else if (comp < 0) {
-                node.right = newNode;
+        if (value != null) {
+            BinaryTreeNode<T> newNode;
+            if (root != null) {
+                BinaryTreeNode<T> node = searchNodePlace(value);
+                newNode = createNewNode(value, node);
+                int comp = node.data.compareTo(value);
+                if (comp > 0) {
+                    node.left = newNode;
+                } else if (comp < 0) {
+                    node.right = newNode;
+                }
+            } else {
+                newNode = createNewNode(value, null);
+                this.root = newNode;
             }
+            nodesCount++;
+            return newNode;
         } else {
-            newNode = createNewNode(value, null);
-            this.root = newNode;
+            throw new IllegalArgumentException("null values can't be stored inside a BST");
         }
-        nodesCount++;
-        return newNode;
     }
 
-    BinaryTreeNode<T> createNewNode(T value, BinaryTreeNode<T> parent) {
-        BinaryTreeNode<T> newNode = new BinaryTreeNode<>(value);
-        newNode.parent = parent;
-        return newNode;
-    }
-
+    /**
+     * Removes any value from the tree
+     *
+     * @param value Value to be removed
+     * @return The removed value
+     */
     @Override
-    public boolean remove(T value) {
+    public T remove(T value) {
+        return removeNode(value) != null ? value : null;
+    }
+
+    /**
+     * Removes any value from the tree and returns the parent of deleted node
+     *
+     * @param value Value to be deleted
+     * @return Parent of deleted node
+     */
+    BinaryTreeNode<T> removeNode(T value) {
         BinaryTreeNode<T> node = searchNode(value);
         if (node != null) {
             BinaryTreeNode<T> parent = node.parent;
@@ -61,6 +92,7 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
                     } else {
                         this.root = node.left;
                         node.left = null;
+                        parent = this.root;
                     }
                 }
             } else {
@@ -74,6 +106,7 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
                     } else {
                         this.root = node.right;
                         node.right = null;
+                        parent = this.root;
                     }
                 } else {
                     if (parent != null) {
@@ -89,15 +122,28 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
                 }
             }
             nodesCount--;
-            return true;
-        } else return false;
+            return parent;
+        }
+        return null;
     }
 
+    /**
+     * Search a value inside the tree
+     *
+     * @param value Value to be searched
+     * @return true/false whether found or not respectively
+     */
     @Override
     public boolean search(T value) {
         return searchNode(value) != null;
     }
 
+    /**
+     * Searches any given value and provides the respective node
+     *
+     * @param value value to be searched
+     * @return Found node
+     */
     @Override
     BinaryTreeNode<T> searchNode(T value) {
         if (root != null && value != null) {
@@ -117,12 +163,17 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
         return null;
     }
 
+    /**
+     * Provides the height of the tree
+     *
+     * @return Tree height
+     */
     @Override
     public int getHeight() {
         BinaryTreeNode<T> node = this.root;
         int level = -1;
         if (node != null) {
-            if (!node.hasChildren()) {
+            if (node.left == null && node.right == null) {
                 return 0;
             } else {
                 BinaryTreeNode<T>[] stack = new BinaryTreeNode[nodesCount];
@@ -150,9 +201,15 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
         return level;
     }
 
+    /**
+     * Based on value given search the respective node which stores that value
+     *
+     * @param value Value which needs to be searched in the tree
+     * @return Node which contains the value
+     */
     BinaryTreeNode<T> searchNodePlace(T value) {
         BinaryTreeNode<T> node = this.root;
-        int comp = 0;
+        int comp;
         while (node != null) {
             comp = node.data.compareTo(value);
             if (comp > 0) {
@@ -168,6 +225,12 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
         return null;
     }
 
+    /**
+     * In order predecessor of the given node
+     *
+     * @param node node of concern
+     * @return In order predecessor node
+     */
     BinaryTreeNode<T> inOrderPredecessor(BinaryTreeNode<T> node) {
         node = node.left;
         while (node.hasRight()) {
@@ -176,8 +239,17 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
         return node;
     }
 
+    /**
+     * Rotates any node based on its child and grandchild directions
+     *
+     * @param node     Node which needs to be rotated
+     * @param childDir Direction of child noce
+     * @param grandDir Direction of grand child node (defaults to child node direction if not present)
+     * @param greatDir Direction of great grand child node (defaults to grand child node direction if not present)
+     * @return the node which took place of the provided node after rotation
+     */
     BinaryTreeNode<T> rotate(BinaryTreeNode<T> node, int childDir, int grandDir, int greatDir) {
-        //System.out.println("Rotate: " + node.data + ", " + childDir + ", " + grandDir + ", " + greatDir);
+        //System.out.println("\nRotate: " + node.data + ", " + childDir + ", " + grandDir + ", " + greatDir);
         BinaryTreeNode<T> child = childDir == -1 ? node.left : node.right;
         BinaryTreeNode<T> parent = node.parent;
 
@@ -208,7 +280,7 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
         if (parent == null) {
             this.root = child;
         }
+        //System.out.println("\nRotate: " + node.data + " completed");
         return child;
-        //System.out.println("Rotate: " + node.data + " completed");
     }
 }
