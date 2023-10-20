@@ -14,6 +14,57 @@ package in.zero.collection;
 public class LinkAVLTree<T extends Comparable<T>> extends LinkBinarySearchTree<T> {
 
     /**
+     * Extension of Binary Tree Node with AVL tree specific functionalities
+     *
+     * @param <T>
+     */
+    private static class AVLTreeNode<T> extends BinaryTreeNode<T> {
+
+        int height;
+
+        /**
+         * Param constructor
+         *
+         * @param value
+         */
+        AVLTreeNode(T value) {
+            super(value);
+        }
+
+        /**
+         * Updates height of any node based on its child nodes
+         */
+        void updateHeight() {
+            if (this.hasLeft()) {
+                AVLTreeNode<T> left = (AVLTreeNode<T>) this.left;
+                if (this.hasRight()) {
+                    AVLTreeNode<T> right = (AVLTreeNode<T>) this.right;
+                    this.height = Math.max(left.height, right.height) + 1;
+                } else {
+                    this.height = left.height + 1;
+                }
+            } else {
+                if (this.hasRight()) {
+                    AVLTreeNode<T> right = (AVLTreeNode<T>) this.right;
+                    this.height = right.height + 1;
+                } else {
+                    this.height = 0;
+                }
+            }
+        }
+
+        /**
+         * AVL node specific implementation
+         *
+         * @return String
+         */
+        @Override
+        public String toString() {
+            return String.format("%s:%s", data, height);
+        }
+    }
+
+    /**
      * Overriden method to add any value to the tree
      *
      * @param val Value to be added
@@ -149,6 +200,7 @@ public class LinkAVLTree<T extends Comparable<T>> extends LinkBinarySearchTree<T
 
     /**
      * Get height of the tree
+     *
      * @return height of avl tree
      */
     @Override

@@ -396,4 +396,27 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
     public int size() {
         return nodesCount;
     }
+
+    public void printTrace() {
+        System.out.println("\n_____________________________________________");
+        System.out.println(getClass().getSimpleName() + ":");
+        System.out.println("----------------------");
+        System.out.print("Level Order: ");
+        for (BinaryTreeNode<T> node : levelOrder()) {
+            System.out.print(node + ", ");
+        }
+        System.out.print("\nPre Order: ");
+        for (BinaryTreeNode<T> node : preOrder()) {
+            System.out.print(node + ", ");
+        }
+        System.out.print("\nIn Order: ");
+        for (BinaryTreeNode<T> node : inOrder()) {
+            System.out.print(node + ", ");
+        }
+        System.out.print("\nPost Order: ");
+        for (BinaryTreeNode<T> node : postOrder()) {
+            System.out.print(node + ", ");
+        }
+        System.out.println("\n_____________________________________________");
+    }
 }
