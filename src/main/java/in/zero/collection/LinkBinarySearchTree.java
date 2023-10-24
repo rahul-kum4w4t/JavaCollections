@@ -4,6 +4,13 @@ package in.zero.collection;
  * A type of Binary tree where values get stored in sorted order
  * Uses link list as base for implementation
  * undefined capacity to store values
+ * <p>
+ * - Stores values in sorted order so that the sorting operation becomes easy
+ * - If may be skewed because no logic is there to balance this tree
+ * ------------ Time Complexity ------------
+ * 1. Insertion: Omega(1), Theta(log(n)), O(n)
+ * 2. Deletion: Omega(1), Theta(log(n)), O(n)
+ * 3. Searching: Omega(1), Theta(log(n)), O(n)
  *
  * @param <T> Comparable objects which can be stored
  */
@@ -70,61 +77,41 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
     BinaryTreeNode<T> removeNode(T value) {
         BinaryTreeNode<T> node = searchNode(value);
         if (node != null) {
-            BinaryTreeNode<T> parent = node.parent;
-            if (node.hasLeft()) {
-                if (node.hasRight()) {
-                    BinaryTreeNode<T> inOrderPred = inOrderPredecessor(node);
-                    node.data = inOrderPred.data;
-                    parent = inOrderPred.parent;
-                    inOrderPred.parent = null;
-                    if (inOrderPred.hasLeft()) {
-                        parent.right = inOrderPred.left;
-                    } else {
-                        parent.right = null;
-                    }
-                } else {
-                    if (parent != null) {
-                        if (parent.left == node) {
-                            parent.left = node.left;
-                        } else {
-                            parent.right = node.left;
-                        }
-                    } else {
-                        this.root = node.left;
-                        node.left = null;
-                        parent = this.root;
-                    }
-                }
-            } else {
-                if (node.hasRight()) {
-                    if (parent != null) {
-                        if (parent.left == node) {
-                            parent.left = node.right;
-                        } else {
-                            parent.right = node.right;
-                        }
-                    } else {
-                        this.root = node.right;
-                        node.right = null;
-                        parent = this.root;
-                    }
-                } else {
-                    if (parent != null) {
-                        node.parent = null;
-                        if (parent.left == node) {
-                            parent.left = null;
-                        } else {
-                            parent.right = null;
-                        }
-                    } else {
-                        this.root = null;
-                    }
-                }
+            if (node.hasLeft() && node.hasRight()) {
+                BinaryTreeNode<T> inOrderPred = inOrderPredecessor(node);
+                node.data = inOrderPred.data;
+                node = inOrderPred;
             }
             nodesCount--;
-            return parent;
+            return replaceNode(node);
         }
         return null;
+    }
+
+    BinaryTreeNode<T> replaceNode(BinaryTreeNode<T> node) {
+        // replace node is always having at most one child
+        BinaryTreeNode<T> replacer, parent = node.parent;
+        if (node.hasRight()) {
+            replacer = node.right;
+            node.right = null;
+        } else {
+            replacer = node.left;
+            node.left = null;
+        }
+        if (parent != null) {
+            node.parent = null;
+            if (parent.left == node) {
+                parent.left = replacer;
+            } else {
+                parent.right = replacer;
+            }
+        } else {
+            this.root = replacer;
+        }
+        if (replacer != null) {
+            replacer.parent = parent;
+        }
+        return parent;
     }
 
     /**

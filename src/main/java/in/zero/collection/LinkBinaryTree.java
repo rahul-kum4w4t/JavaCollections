@@ -79,7 +79,7 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
      * @return Array of all the removed values
      */
     public T[] removeAll(T... values) {
-        return (T[]) Arrays.stream(values).map(this::add).toArray();
+        return (T[]) Arrays.stream(values).map(this::remove).toArray();
     }
 
     /**
@@ -262,7 +262,7 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
             BinaryTreeNode<T>[] elements = new BinaryTreeNode[nodesCount];
             elements[0] = root;
             int curr = 1;
-            for (int i = 0; i < nodesCount; i++) {
+            for (int i = 0; i < curr; i++) {
                 if (elements[i].hasLeft()) {
                     elements[curr++] = elements[i].left;
                 }
@@ -398,25 +398,27 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
     }
 
     public void printTrace() {
-        System.out.println("\n_____________________________________________");
-        System.out.println(getClass().getSimpleName() + ":");
-        System.out.println("----------------------");
-        System.out.print("Level Order: ");
-        for (BinaryTreeNode<T> node : levelOrder()) {
-            System.out.print(node + ", ");
-        }
-        System.out.print("\nPre Order: ");
-        for (BinaryTreeNode<T> node : preOrder()) {
-            System.out.print(node + ", ");
-        }
-        System.out.print("\nIn Order: ");
-        for (BinaryTreeNode<T> node : inOrder()) {
-            System.out.print(node + ", ");
-        }
-        System.out.print("\nPost Order: ");
-        for (BinaryTreeNode<T> node : postOrder()) {
-            System.out.print(node + ", ");
-        }
-        System.out.println("\n_____________________________________________");
+        if (root != null) {
+            System.out.println("\n_____________________________________________");
+            System.out.println(getClass().getSimpleName() + ":");
+            System.out.println("----------------------");
+            System.out.print("Level Order: ");
+            for (BinaryTreeNode<T> node : levelOrder()) {
+                System.out.print(node + ", ");
+            }
+            System.out.print("\nPre Order: ");
+            for (BinaryTreeNode<T> node : preOrder()) {
+                System.out.print(node + ", ");
+            }
+            System.out.print("\nIn Order: ");
+            for (BinaryTreeNode<T> node : inOrder()) {
+                System.out.print(node + ", ");
+            }
+            System.out.print("\nPost Order: ");
+            for (BinaryTreeNode<T> node : postOrder()) {
+                System.out.print(node + ", ");
+            }
+            System.out.println("\n_____________________________________________");
+        } else System.out.println("No data in Binary tree");
     }
 }
