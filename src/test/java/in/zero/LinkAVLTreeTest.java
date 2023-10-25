@@ -1,6 +1,6 @@
 package in.zero;
 
-import in.zero.collection.LinkAVLTree;
+import in.zero.collection.link.AVLTree;
 import junit.framework.TestCase;
 
 public class LinkAVLTreeTest extends TestCase {
@@ -14,7 +14,7 @@ public class LinkAVLTreeTest extends TestCase {
         final int numOfElems = 13;
         final double minHeight = Math.floor(Math.log(numOfElems) / Math.log(2));
         final double maxHeight = 1.44 * Math.log(numOfElems) / Math.log(2);
-        LinkAVLTree<Integer> ints = new LinkAVLTree<>();
+        AVLTree<Integer> ints = new AVLTree<>();
         ints.addAll(10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 71, 35);
         System.out.println(minHeight+":"+maxHeight);
         int height = ints.getHeight();

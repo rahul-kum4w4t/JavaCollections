@@ -1,9 +1,6 @@
 package in.zero;
 
-import in.zero.collection.LinkAVLTree;
-import in.zero.collection.LinkBinarySearchTree;
-import in.zero.collection.LinkBinaryTree;
-import in.zero.collection.LinkRedBlackTree;
+import in.zero.collection.link.*;
 
 import java.util.Iterator;
 import java.util.stream.IntStream;
@@ -19,13 +16,16 @@ public class App {
         testBST();
         testAVLTree();
         testRedBlackTree();
+        testSplayTree();
+        testMaxHeap();
+        testMinHeap();
     }
 
     public static void testBinaryTree() {
         /**
          * Simple Binary Tree Tests
          */
-        LinkBinaryTree<Integer> tree = getCompleteLinkBinaryTree();
+        BinaryTree<Integer> tree = getCompleteLinkBinaryTree();
 
         /**
          * For each with default pre order traversal
@@ -61,10 +61,10 @@ public class App {
 
     public static void testBST() {
         /**
-         * LinkBinarySearchTree
+         * BinarySearchTree
          */
         System.out.println("\n\n---------------- BST ---------------");
-        LinkBinarySearchTree<Integer> bst = new LinkBinarySearchTree<>();
+        BinarySearchTree<Integer> bst = new BinarySearchTree<>();
         IntStream.of(4, 2, 19, 11, 7, 6, 13, 5, 1, 14, 3, 15, 12, 9, 18, 8).forEach(bst::add);
         bst.remove(11);
         System.out.println("Tree height : " + bst.getHeight());
@@ -72,7 +72,7 @@ public class App {
     }
 
     public static void testAVLTree() {
-        LinkAVLTree<Integer> avl = new LinkAVLTree<>();
+        AVLTree<Integer> avl = new AVLTree<>();
         try {
             avl.addAll(10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 71, 35);
             //avl.addAll(64, 22, 6, 70, 20, 82, 40, 21, 50, 25, 95, 32, 34, 46, 27, 93, 17, 97, 96, 9, 38, 51, 26, 30, 90, 11, 98, 2, 62, 31, 28, 55, 83, 67, 45, 33, 44, 43, 29, 37, 72, 99, 94, 63, 4, 84, 74, 1, 87, 69, 56, 61, 81, 14, 3, 47, 42, 7, 48, 39, 100, 59, 79, 10, 60, 68, 52, 88, 80, 65, 53, 24, 71, 73, 76, 41, 8, 16, 54, 91, 13, 77, 85, 78, 58, 86, 19, 49, 35, 92, 15, 66, 75, 36, 89, 57, 18, 23, 5, 12);
@@ -95,7 +95,7 @@ public class App {
     }
 
     public static void testRedBlackTree() {
-        LinkRedBlackTree<Integer> rbt = new LinkRedBlackTree<>();
+        RedBlackTree<Integer> rbt = new RedBlackTree<>();
         rbt.addAll(10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 71, 35);
         rbt.printTrace();
         rbt.remove(10);
@@ -114,8 +114,31 @@ public class App {
         rbt.printTrace();
     }
 
-    public static LinkBinaryTree<Integer> getCompleteLinkBinaryTree() {
-        LinkBinaryTree<Integer> tree = new LinkBinaryTree<>();
+    public static void testSplayTree() {
+        SplayTree<Integer> sTree = new SplayTree<>();
+        sTree.addAll(10, 1, 20);
+        sTree.addAll(15, 25, 17, 7, 21, 5, 33, 73, 31, 35);
+        sTree.search(74);
+        sTree.remove(17);
+        sTree.printTrace();
+    }
+
+    public static void testMaxHeap() {
+        Heap<Integer> maxHeap = new Heap<>(Heap.Type.MAX);
+        maxHeap.addAll(10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 31, 35, 74, 17);
+        maxHeap.printTrace();
+        maxHeap.remove();
+        maxHeap.printTrace();
+    }
+
+    public static void testMinHeap() {
+        Heap<Integer> maxHeap = new Heap<>();
+        maxHeap.addAll(10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 31, 35, 74, 17);
+        maxHeap.printTrace();
+    }
+
+    public static BinaryTree<Integer> getCompleteLinkBinaryTree() {
+        BinaryTree<Integer> tree = new BinaryTree<>();
         IntStream.range(1, 32).forEach(val -> tree.add(val));
         return tree;
     }

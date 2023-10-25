@@ -1,4 +1,4 @@
-package in.zero.collection;
+package in.zero.collection.link;
 
 /**
  * Reb-Black Tree:
@@ -30,7 +30,7 @@ package in.zero.collection;
  *
  * @param <T>
  */
-public class LinkRedBlackTree<T extends Comparable<T>> extends LinkBinarySearchTree<T> {
+public class RedBlackTree<T extends Comparable<T>> extends BinarySearchTree<T> {
 
     private static class RedBlackTreeNode<T extends Comparable<T>> extends BinaryTreeNode<T> {
 
@@ -75,7 +75,7 @@ public class LinkRedBlackTree<T extends Comparable<T>> extends LinkBinarySearchT
      * @param {any} value Value to be added to the tree
      */
     @Override
-    public LinkBinarySearchTree<T> add(T value) {
+    public BinarySearchTree<T> add(T value) {
 
         RedBlackTreeNode<T> newNode = (RedBlackTreeNode<T>) this.addNode(value);
         RedBlackTreeNode<T> parent, uncle, grand;

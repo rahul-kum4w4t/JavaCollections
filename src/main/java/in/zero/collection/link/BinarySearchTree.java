@@ -1,4 +1,4 @@
-package in.zero.collection;
+package in.zero.collection.link;
 
 /**
  * A type of Binary tree where values get stored in sorted order
@@ -14,7 +14,7 @@ package in.zero.collection;
  *
  * @param <T> Comparable objects which can be stored
  */
-public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTree<T> {
+public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
 
     /**
      * Add a value to the tree
@@ -23,7 +23,7 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
      * @return reference to the tree
      */
     @Override
-    public LinkBinarySearchTree<T> add(T value) {
+    public BinarySearchTree<T> add(T value) {
         this.addNode(value);
         return this;
     }
@@ -34,11 +34,12 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
      * @param value value to be added
      * @return new node which holds the inserted value
      */
+    @Override
     BinaryTreeNode<T> addNode(T value) {
         if (value != null) {
             BinaryTreeNode<T> newNode;
             if (root != null) {
-                BinaryTreeNode<T> node = searchNodePlace(value);
+                BinaryTreeNode<T> node = searchNodePlace(value, false);
                 newNode = createNewNode(value, node);
                 int comp = node.data.compareTo(value);
                 if (comp > 0) {
@@ -194,7 +195,7 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
      * @param value Value which needs to be searched in the tree
      * @return Node which contains the value
      */
-    BinaryTreeNode<T> searchNodePlace(T value) {
+    BinaryTreeNode<T> searchNodePlace(T value, boolean exactSearch) {
         BinaryTreeNode<T> node = this.root;
         int comp;
         while (node != null) {
@@ -205,6 +206,8 @@ public class LinkBinarySearchTree<T extends Comparable<T>> extends LinkBinaryTre
             } else if (comp < 0) {
                 if (node.hasRight()) node = node.right;
                 else return node;
+            } else if (exactSearch) {
+                return node;
             } else {
                 throw new IllegalArgumentException("BST can't accept duplicate values");
             }

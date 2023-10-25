@@ -1,4 +1,6 @@
-package in.zero.collection;
+package in.zero.collection.link;
+
+import in.zero.collection.Collection;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -12,7 +14,7 @@ import java.util.stream.StreamSupport;
  *
  * @param <T> Any object which we want to store inside a tree
  */
-public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
+public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
     BinaryTreeNode<T> root;
     int nodesCount = 0;
 
@@ -48,7 +50,7 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
      * @param values Values to be added
      * @return reference to the tree
      */
-    public LinkBinaryTree<T> addAll(T... values) {
+    public BinaryTree<T> addAll(T... values) {
         Arrays.stream(values).forEach(this::add);
         return this;
     }
@@ -59,17 +61,24 @@ public class LinkBinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<
      * @param value Value to be added
      * @return Reference to the tree
      */
-    public LinkBinaryTree<T> add(T value) {
+    public BinaryTree<T> add(T value) {
+        addNode(value);
+        return this;
+    }
+
+    BinaryTreeNode<T> addNode(T value) {
+        BinaryTreeNode<T> newNode;
         BinaryTreeNode<T> lastNode = getLastVacantNode();
         if (lastNode != null) {
-            BinaryTreeNode<T> newNode = createNewNode(value, lastNode);//new BinaryTreeNode<>(value, lastNode);
+            newNode = createNewNode(value, lastNode);
             if (!lastNode.hasLeft()) lastNode.left = newNode;
             else lastNode.right = newNode;
         } else {
-            root = new BinaryTreeNode<>(value);
+            newNode = new BinaryTreeNode<>(value);
+            root = newNode;
         }
         nodesCount++;
-        return this;
+        return newNode;
     }
 
     /**

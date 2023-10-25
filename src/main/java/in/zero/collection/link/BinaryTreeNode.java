@@ -1,4 +1,4 @@
-package in.zero.collection;
+package in.zero.collection.link;
 
 /**
  * Node to store any value in the Binary trees

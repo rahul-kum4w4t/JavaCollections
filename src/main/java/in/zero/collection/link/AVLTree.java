@@ -1,4 +1,4 @@
-package in.zero.collection;
+package in.zero.collection.link;
 
 /**
  * AVL tree based on link lists
@@ -11,7 +11,7 @@ package in.zero.collection;
  * @author Rahul Kumawat
  * @since 19-10.2023
  */
-public class LinkAVLTree<T extends Comparable<T>> extends LinkBinarySearchTree<T> {
+public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
 
     /**
      * Extension of Binary Tree Node with AVL tree specific functionalities
@@ -71,7 +71,7 @@ public class LinkAVLTree<T extends Comparable<T>> extends LinkBinarySearchTree<T
      * @return reference to the tree
      */
     @Override
-    public LinkAVLTree<T> add(T val) {
+    public AVLTree<T> add(T val) {
         AVLTreeNode<T> newNode = (AVLTreeNode<T>) this.addNode(val);
         newNode.height = 0;
         AVLTreeNode<T> node = (AVLTreeNode<T>) newNode.parent; // Parent Node

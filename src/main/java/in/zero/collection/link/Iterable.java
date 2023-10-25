@@ -1,4 +1,4 @@
-package in.zero.collection;
+package in.zero.collection.link;
 
 import java.util.Iterator;
 
