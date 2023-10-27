@@ -1,5 +1,15 @@
 package in.zero.collection.link;
 
+/**
+ * Heap
+ * A Heap is a Complete binary Tree that meets heap Properties-
+ * Min Heap: The element of each node is larger than or equal to the element at its parent.
+ * The node with the lowest value is the root.
+ * Max Heap: The element of each node is smaller than the element at its parent.
+ * The highest value element is at the root.
+ * Usage:--------------------
+ * - Heap's are used as priority queues
+ */
 public class Heap<T extends Comparable<T>> extends BinaryTree<T> {
 
     public enum Type {MIN, MAX}
@@ -17,20 +27,7 @@ public class Heap<T extends Comparable<T>> extends BinaryTree<T> {
     @Override
     public Heap<T> add(T value) {
         BinaryTreeNode<T> newNode = super.addNode(value);
-        while (
-                newNode.parent != null && (
-                        type == Type.MAX ? (
-                                newNode.data.compareTo(newNode.parent.data) > 0
-                        ) : (
-                                newNode.data.compareTo(newNode.parent.data) < 0
-                        )
-                )
-        ) {
-            T data = newNode.data;
-            newNode.data = newNode.parent.data;
-            newNode.parent.data = data;
-            newNode = newNode.parent;
-        }
+        upHeapify(newNode);
         return this;
     }
 
@@ -83,6 +80,23 @@ public class Heap<T extends Comparable<T>> extends BinaryTree<T> {
             } else {
                 node = null;
             }
+        }
+    }
+
+    private void upHeapify(BinaryTreeNode<T> node) {
+        while (
+                node.parent != null && (
+                        type == Type.MAX ? (
+                                node.data.compareTo(node.parent.data) > 0
+                        ) : (
+                                node.data.compareTo(node.parent.data) < 0
+                        )
+                )
+        ) {
+            T data = node.data;
+            node.data = node.parent.data;
+            node.parent.data = data;
+            node = node.parent;
         }
     }
 

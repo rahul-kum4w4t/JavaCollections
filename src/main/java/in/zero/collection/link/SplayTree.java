@@ -2,6 +2,13 @@ package in.zero.collection.link;
 
 public class SplayTree<T extends Comparable<T>> extends BinarySearchTree<T> {
 
+    public SplayTree() {
+    }
+
+    public SplayTree(Sort order) {
+        super(order);
+    }
+
     @Override
     public SplayTree<T> add(T value) {
         BinaryTreeNode<T> node = super.addNode(value);

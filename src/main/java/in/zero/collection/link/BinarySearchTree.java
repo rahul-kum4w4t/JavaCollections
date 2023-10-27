@@ -16,6 +16,22 @@ package in.zero.collection.link;
  */
 public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
 
+    public enum Sort {ASC, DESC}
+
+    private final int orderMul;
+
+    public BinarySearchTree() {
+        this.orderMul = 1;
+    }
+
+    public BinarySearchTree(Sort order) {
+        if (order == Sort.DESC) {
+            this.orderMul = -1;
+        } else {
+            this.orderMul = 1;
+        }
+    }
+
     /**
      * Add a value to the tree
      *
@@ -41,7 +57,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
             if (root != null) {
                 BinaryTreeNode<T> node = searchNodePlace(value, false);
                 newNode = createNewNode(value, node);
-                int comp = node.data.compareTo(value);
+                int comp = this.orderMul * node.data.compareTo(value);
                 if (comp > 0) {
                     node.left = newNode;
                 } else if (comp < 0) {
@@ -138,7 +154,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
             BinaryTreeNode<T> node = this.root;
             int comp = 0;
             while (node != null) {
-                comp = node.data.compareTo(value);
+                comp = this.orderMul * node.data.compareTo(value);
                 if (comp > 0) {
                     node = node.left;
                 } else if (comp < 0) {
@@ -149,6 +165,15 @@ public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
             }
         }
         return null;
+    }
+
+    /**
+     * Shows the sorting order for the tree
+     *
+     * @return sorting order string
+     */
+    public String getSortingOrder() {
+        return orderMul == -1 ? Sort.DESC.toString() : Sort.ASC.toString();
     }
 
     /**
@@ -199,7 +224,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends BinaryTree<T> {
         BinaryTreeNode<T> node = this.root;
         int comp;
         while (node != null) {
-            comp = node.data.compareTo(value);
+            comp = this.orderMul * node.data.compareTo(value);
             if (comp > 0) {
                 if (node.hasLeft()) node = node.left;
                 else return node;

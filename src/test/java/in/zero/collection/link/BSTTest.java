@@ -1,14 +1,13 @@
-package in.zero;
+package in.zero.collection.link;
 
 import in.zero.collection.link.AVLTree;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class LinkAVLTreeTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.*;
 
-    public LinkAVLTreeTest(String testName) {
-        super(testName);
-    }
+public class BSTTest {
 
+    @Test
     public void testApp() {
 
         final int numOfElems = 13;
@@ -16,7 +15,7 @@ public class LinkAVLTreeTest extends TestCase {
         final double maxHeight = 1.44 * Math.log(numOfElems) / Math.log(2);
         AVLTree<Integer> ints = new AVLTree<>();
         ints.addAll(10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 71, 35);
-        System.out.println(minHeight+":"+maxHeight);
+        System.out.println(minHeight + ":" + maxHeight);
         int height = ints.getHeight();
         assertTrue((minHeight <= height) && (maxHeight >= height));
     }

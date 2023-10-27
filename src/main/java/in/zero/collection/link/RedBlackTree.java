@@ -32,6 +32,14 @@ package in.zero.collection.link;
  */
 public class RedBlackTree<T extends Comparable<T>> extends BinarySearchTree<T> {
 
+
+    public RedBlackTree() {
+    }
+
+    public RedBlackTree(Sort order) {
+        super(order);
+    }
+
     private static class RedBlackTreeNode<T extends Comparable<T>> extends BinaryTreeNode<T> {
 
         boolean color;

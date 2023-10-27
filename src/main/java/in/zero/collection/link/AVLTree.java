@@ -13,6 +13,13 @@ package in.zero.collection.link;
  */
 public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
 
+    public AVLTree() {
+    }
+
+    public AVLTree(Sort order) {
+        super(order);
+    }
+
     /**
      * Extension of Binary Tree Node with AVL tree specific functionalities
      *
@@ -119,34 +126,31 @@ public class AVLTree<T extends Comparable<T>> extends BinarySearchTree<T> {
      */
     @Override
     public T remove(T val) {
-        if (val != null) {
-            AVLTreeNode<T> parent = (AVLTreeNode<T>) super.removeNode(val);
-            AVLTreeNode<T> left, right;
-            int leftHeight, rightHeight, height;
-            int grandDir, childDir, greatDir;
-            while (parent != null) {
-                childDir = getDominatingChildDir(parent, 0);
-                grandDir = getDominatingChildDir(childDir == -1 ? parent.left : parent.right, childDir);
-                greatDir = grandDir;
-                left = (AVLTreeNode<T>) parent.left;
-                right = (AVLTreeNode<T>) parent.right;
-                leftHeight = left != null ? left.height : -1;
-                rightHeight = right != null ? right.height : -1;
-                if (Math.abs(leftHeight - rightHeight) == 2) {
-                    parent = rotate(parent, childDir, grandDir, greatDir);
+        AVLTreeNode<T> parent = (AVLTreeNode<T>) super.removeNode(val);
+        AVLTreeNode<T> left, right;
+        int leftHeight, rightHeight, height;
+        int grandDir, childDir, greatDir;
+        while (parent != null) {
+            childDir = getDominatingChildDir(parent, 0);
+            grandDir = getDominatingChildDir(childDir == -1 ? parent.left : parent.right, childDir);
+            greatDir = grandDir;
+            left = (AVLTreeNode<T>) parent.left;
+            right = (AVLTreeNode<T>) parent.right;
+            leftHeight = left != null ? left.height : -1;
+            rightHeight = right != null ? right.height : -1;
+            if (Math.abs(leftHeight - rightHeight) == 2) {
+                parent = rotate(parent, childDir, grandDir, greatDir);
+            } else {
+                height = Math.max(leftHeight, rightHeight) + 1;
+                if (height != parent.height) {
+                    parent.height = height;
+                    parent = (AVLTreeNode<T>) parent.parent;
                 } else {
-                    height = Math.max(leftHeight, rightHeight) + 1;
-                    if (height != parent.height) {
-                        parent.height = height;
-                        parent = (AVLTreeNode<T>) parent.parent;
-                    } else {
-                        parent = null;
-                    }
+                    parent = null;
                 }
             }
-            return val;
         }
-        return null;
+        return val;
     }
 
     /**
