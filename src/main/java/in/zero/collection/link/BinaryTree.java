@@ -190,6 +190,16 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
     }
 
     /**
+     * Post Order iterator which is required to traverse all the elements in a tree
+     *
+     * @return iterator object
+     */
+    @Override
+    public Iterator<T> reverseOrderIterator() {
+        return new BinaryTreeIterator<>(reverseOrder(this.root));
+    }
+
+    /**
      * Create a Java 1.8 stream object to traverse all the tree elements
      *
      * @return iterator object
@@ -373,6 +383,44 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
                     }
                     if (node.hasRight()) {
                         node = node.right;
+                    } else {
+                        stackPointer--;
+                    }
+                }
+            }
+            return inorder;
+        }
+        return null;
+    }
+
+    /**
+     * Provides an array of reverse order traversed nodes for the tree
+     *
+     * @return array of nodes
+     */
+    @SuppressWarnings("unchecked")
+    BinaryTreeNode<T>[] reverseOrder(BinaryTreeNode<T> node) {
+        if (node != null) {
+            BinaryTreeNode<T>[] stack = new BinaryTreeNode[nodesCount];
+            BinaryTreeNode<T>[] inorder = new BinaryTreeNode[nodesCount];
+            int stackPointer = 0;
+            int count = 0;
+            while (stackPointer >= 0) {
+                if (node.hasRight()) {
+                    stack[stackPointer++] = node;
+                    node = node.right;
+                } else if (node.hasLeft()) {
+                    inorder[count++] = node;
+                    node = node.left;
+                } else {
+                    inorder[count++] = node;
+                    while (stackPointer > 0 && !node.hasLeft()) {
+                        node = stack[stackPointer - 1];
+                        inorder[count++] = node;
+                        stackPointer--;
+                    }
+                    if (node.hasLeft()) {
+                        node = node.left;
                     } else {
                         stackPointer--;
                     }

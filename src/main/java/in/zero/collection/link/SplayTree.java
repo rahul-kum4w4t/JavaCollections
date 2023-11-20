@@ -2,8 +2,7 @@ package in.zero.collection.link;
 
 public class SplayTree<T extends Comparable<T>> extends BinarySearchTree<T> {
 
-	public SplayTree() {
-	}
+	public SplayTree() {}
 
 	public SplayTree(boolean inverse) {
 		super(inverse);
