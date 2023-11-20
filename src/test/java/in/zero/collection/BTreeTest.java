@@ -12,6 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BTreeTest {
 
     final static Integer[] testData = {10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 71, 35, 42, 51, 28, 80, 11, 90};
+
+    final static Integer[] levelOrderData5 = {21, 7, 15, 35, 71, 1, 5, 10, 11, 17, 20, 25, 28, 33, 42, 51, 73, 80, 90};
+    final static Integer[] inOrderData5 = {1, 5, 7, 10, 11, 15, 17, 20, 21, 25, 28, 33, 35, 42, 51, 71, 73, 80, 90};
+    final static Integer[] preOrderData5 = {21, 7, 1, 5, 15, 10, 11, 17, 20, 35, 25, 28, 33, 71, 42, 51, 73, 80, 90};
+    final static Integer[] postOrderData5 = {1, 5, 10, 11, 7, 17, 20, 15, 25, 28, 33, 42, 51, 35, 73, 80, 90, 71, 21};
+    final static Integer[] reverseOrderData5 = {90, 80, 73, 71, 51, 42, 35, 33, 28, 25, 21, 20, 17, 15, 11, 10, 7, 5, 1};
     final static Integer[] data1000 = {
             715, 739, 260, 755, 644, 367, 346, 212, 113, 992, 784, 516, 426, 535, 858, 975, 452, 811, 599, 888, 232, 153, 289, 165, 651, 164, 819, 312, 202, 668, 445, 199, 428, 513, 602, 498, 141, 252, 952, 265, 934, 815, 737, 171, 989, 133, 961, 16, 785, 447,
             156, 95, 789, 399, 521, 845, 372, 443, 640, 402, 772, 995, 895, 103, 803, 598, 684, 442, 38, 140, 275, 17, 34, 484, 927, 466, 650, 373, 561, 65, 294, 18, 186, 968, 953, 779, 88, 10, 169, 906, 587, 781, 308, 430, 634, 999, 908, 714, 475, 351,
@@ -211,17 +217,29 @@ public class BTreeTest {
             assertTrue(arr[i] > arr[i + 1], "Tree integrity failed for value: " + value);
         }
     }
+
+    @Test
+    void teslLevelOrder() {
+        assertArrayEquals(numTreeAsc.preOrder(), preOrderData5, "Pre Order data doesn't match for BTree");
+    }
+
+    @Test
+    void testInOrder() {
+        assertArrayEquals(numTreeAsc.postOrder(), postOrderData5, "Post Order data doesn't match for BTree");
+    }
+
+    @Test
+    void testPreOrder() {
+        assertArrayEquals(numTreeAsc.inOrder(), inOrderData5, "In Order data doesn't match for BTree");
+    }
+
+    @Test
+    void testPostOrder() {
+        assertArrayEquals(numTreeAsc.reverseOrder(), reverseOrderData5, "Reverse Order data doesn't match for BTree");
+    }
+
+    @Test
+    void testReverseOrder() {
+        assertArrayEquals(numTreeAsc.levelOrder(), levelOrderData5, "Level Order data doesn't match for BTree");
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

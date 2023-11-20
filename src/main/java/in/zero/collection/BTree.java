@@ -504,6 +504,13 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
     }
 
     @SuppressWarnings("unchecked")
+    public T[] reverseOrder() {
+        T[] reverse = (T[]) Array.newInstance(TYPE, valuesCount);
+        if (this.root != null) reverseOrder(this.root, reverse, 0);
+        return reverse;
+    }
+
+    @SuppressWarnings("unchecked")
     public T[] levelOrder() {
         T[] level = (T[]) Array.newInstance(TYPE, valuesCount);
         final int arrCount = valuesCount / ((int) Math.ceil((double) ORDER / 2) - 1);
@@ -557,6 +564,19 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
                 count = postOrder(node.children[i + 1], post, count);
             }
             post[count++] = node.values[i];
+        }
+        return count;
+    }
+
+    private int reverseOrder(BTreeNode<T> node, T[] reverse, int count) {
+        for (int i = node.counter; i > 0; i--) {
+            if (node.children[i] != null) {
+                count = reverseOrder(node.children[i], reverse, count);
+            }
+            reverse[count++] = node.values[i - 1];
+        }
+        if (node.children[0] != null) {
+            count = reverseOrder(node.children[0], reverse, count);
         }
         return count;
     }
