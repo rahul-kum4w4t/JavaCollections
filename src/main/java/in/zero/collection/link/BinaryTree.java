@@ -113,7 +113,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
                 root = null;
                 nodesCount = 0;
             } else {
-                BinaryTreeNode<T>[] level = levelOrder();
+                BinaryTreeNode<T>[] level = levelOrder(this.root);
                 BinaryTreeNode<T> lastNode = level[level.length - 1];
                 BinaryTreeNode<T> parent = lastNode.parent;
                 lastNode.parent = null;
@@ -146,7 +146,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      */
     @Override
     public Iterator<T> iterator() {
-        return new BinaryTreeIterator<>(inOrder());
+        return new BinaryTreeIterator<>(inOrder(this.root));
     }
 
     /**
@@ -156,7 +156,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      */
     @Override
     public Iterator<T> levelOrderIterator() {
-        return new BinaryTreeIterator<>(levelOrder());
+        return new BinaryTreeIterator<>(levelOrder(this.root));
     }
 
     /**
@@ -166,7 +166,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      */
     @Override
     public Iterator<T> preOrderIterator() {
-        return new BinaryTreeIterator<>(preOrder());
+        return new BinaryTreeIterator<>(preOrder(this.root));
     }
 
     /**
@@ -176,7 +176,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      */
     @Override
     public Iterator<T> inOrderIterator() {
-        return new BinaryTreeIterator<>(inOrder());
+        return new BinaryTreeIterator<>(inOrder(this.root));
     }
 
     /**
@@ -186,7 +186,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      */
     @Override
     public Iterator<T> postOrderIterator() {
-        return new BinaryTreeIterator<>(postOrder());
+        return new BinaryTreeIterator<>(postOrder(this.root));
     }
 
     /**
@@ -265,10 +265,10 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      * @return array of nodes
      */
     @SuppressWarnings("unchecked")
-    BinaryTreeNode<T>[] levelOrder() {
-        if (root != null) {
+    BinaryTreeNode<T>[] levelOrder(BinaryTreeNode<T> node) {
+        if (node != null) {
             BinaryTreeNode<T>[] elements = new BinaryTreeNode[nodesCount];
-            elements[0] = root;
+            elements[0] = node;
             int curr = 1;
             for (int i = 0; i < curr; i++) {
                 if (elements[i].hasLeft()) {
@@ -289,9 +289,8 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      * @return array of nodes
      */
     @SuppressWarnings("unchecked")
-    BinaryTreeNode<T>[] preOrder() {
-        if (root != null) {
-            BinaryTreeNode<T> node = root;
+    BinaryTreeNode<T>[] preOrder(BinaryTreeNode<T> node) {
+        if (node != null) {
             BinaryTreeNode<T>[] stack = new BinaryTreeNode[getHeight()];
             BinaryTreeNode<T>[] preordered = new BinaryTreeNode[nodesCount];
             int stackPointer = 0;
@@ -321,9 +320,8 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      * @return array of nodes
      */
     @SuppressWarnings("unchecked")
-    BinaryTreeNode<T>[] postOrder() {
-        if (root != null) {
-            BinaryTreeNode<T> node = root;
+    BinaryTreeNode<T>[] postOrder(BinaryTreeNode<T> node) {
+        if (node != null) {
             BinaryTreeNode<T>[] stack = new BinaryTreeNode[getHeight()];
             BinaryTreeNode<T>[] postordered = new BinaryTreeNode[nodesCount];
             int stackPointer = 0;
@@ -353,9 +351,8 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      * @return array of nodes
      */
     @SuppressWarnings("unchecked")
-    BinaryTreeNode<T>[] inOrder() {
-        if (root != null) {
-            BinaryTreeNode<T> node = root;
+    BinaryTreeNode<T>[] inOrder(BinaryTreeNode<T> node) {
+        if (node != null) {
             BinaryTreeNode<T>[] stack = new BinaryTreeNode[nodesCount];
             BinaryTreeNode<T>[] inorder = new BinaryTreeNode[nodesCount];
             int stackPointer = 0;
@@ -417,19 +414,19 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
             System.out.println(getClass().getSimpleName() + ":");
             System.out.println("----------------------");
             System.out.print("Level Order: ");
-            for (BinaryTreeNode<T> node : levelOrder()) {
+            for (BinaryTreeNode<T> node : levelOrder(this.root)) {
                 System.out.print(node + ", ");
             }
             System.out.print("\nPre Order: ");
-            for (BinaryTreeNode<T> node : preOrder()) {
+            for (BinaryTreeNode<T> node : preOrder(this.root)) {
                 System.out.print(node + ", ");
             }
             System.out.print("\nIn Order: ");
-            for (BinaryTreeNode<T> node : inOrder()) {
+            for (BinaryTreeNode<T> node : inOrder(this.root)) {
                 System.out.print(node + ", ");
             }
             System.out.print("\nPost Order: ");
-            for (BinaryTreeNode<T> node : postOrder()) {
+            for (BinaryTreeNode<T> node : postOrder(this.root)) {
                 System.out.print(node + ", ");
             }
             System.out.println("\n_____________________________________________");
