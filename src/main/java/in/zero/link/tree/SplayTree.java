@@ -1,4 +1,4 @@
-package in.zero.collection.link;
+package in.zero.link.tree;
 
 public class SplayTree<T extends Comparable<T>> extends BinarySearchTree<T> {
 

@@ -1,4 +1,4 @@
-package in.zero.collection.array;
+package in.zero.array;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,7 @@
-package in.zero.collection;
+package in.zero.link.mwaytree;
 
-import in.zero.collection.array.ArrayUtils;
+import in.zero.Collection;
+import in.zero.array.ArrayUtils;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -20,23 +21,9 @@ import java.util.Objects;
  * 1. Left bias - consider middle left element for splitting
  * 2. Right Bias - consider middle right element for splitting
  */
-public class BTree<T extends Comparable<T>> implements Collection<T> {
+public class BTree<T extends Comparable<T>> extends MwaySearchTree<T> {
 
-    private final int ORDER;
-
-    private final Class<T> TYPE;
-
-    private final boolean LEFT_BIAS;
-
-    BTreeNode<T> root;
-
-    private final int ORDER_MUL;
-
-    int valuesCount;
-
-    private final int MIN_KEYS;
-
-    private final int MIDDLE;
+    final int MIDDLE;
 
     /**
      * BTree constructor
@@ -119,24 +106,13 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
      * @param inverse inverse the order of sorting?, Default - natural sorting order
      */
     public BTree(Class<T> type, int order, boolean inverse, boolean bias) {
-        LEFT_BIAS = bias;
-        ORDER_MUL = inverse ? -1 : 1;
-        if (type != null) {
-            TYPE = type;
-        } else {
-            throw new IllegalArgumentException("Class type for the data is required.");
+        super(type, order, inverse);
+
+        int middle = (int) Math.floor((double) order / 2);
+        if (order % 2 == 0 && !bias) {
+            middle--;
         }
-        if (order >= 3) {
-            ORDER = order;
-            int middle = (int) Math.floor((double) order / 2);
-            if (order % 2 == 0 && !LEFT_BIAS) {
-                middle--;
-            }
-            MIDDLE = middle;
-            MIN_KEYS = (int) Math.ceil((double) order / 2) - 1;
-        } else {
-            throw new IllegalArgumentException("Order for BTree must be >= 3");
-        }
+        MIDDLE = middle;
     }
 
     /**
@@ -149,7 +125,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
     public BTree<T> add(T value) {
         if (value != null) {
             if (root == null) {
-                this.root = new BTreeNode<>(TYPE, ORDER, value);
+                this.root = new MwayNode<>(TYPE, ORDER, value);
             } else {
                 FoundNodeAtIndex<T> found = findEligibleNode(value);
                 if ((found.node.counter + 1) < ORDER) {
@@ -165,18 +141,9 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return this;
     }
 
-    private void shiftAndInsertAt(final BTreeNode<T> node, final int insertIndex, final T value, final BTreeNode<T> right) {
-        ArrayUtils.unshift(node.values, insertIndex, value, node.counter);
-        node.counter++;
-        if (right != null) {
-            right.parent = node;
-            ArrayUtils.unshift(node.children, insertIndex + 1, right);
-        }
-    }
-
-    private void insertAndSplit(final BTreeNode<T> node, final int insertIndex, final T value, final BTreeNode<T> right) {
-        BTreeNode<T> parent = node.parent;
-        BTreeNode<T> newNode = new BTreeNode<>(this.TYPE, ORDER, null, parent);
+    void insertAndSplit(final MwayNode<T> node, final int insertIndex, final T value, final MwayNode<T> right) {
+        MwayNode<T> parent = node.parent;
+        MwayNode<T> newNode = new MwayNode<>(this.TYPE, ORDER, null, parent);
 
         T[] temp = Arrays.copyOf(node.values, ORDER);
         ArrayUtils.unshift(temp, insertIndex, value);
@@ -187,11 +154,11 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         newNode.counter = ORDER - MIDDLE - 1;
 
         if (right != null) {
-            BTreeNode<T>[] tempChildren = Arrays.copyOf(node.children, ORDER + 1);
+            MwayNode<T>[] tempChildren = Arrays.copyOf(node.children, ORDER + 1);
             ArrayUtils.unshift(tempChildren, insertIndex + 1, right);
-            Arrays.fill(node.children, MIDDLE, node.children.length, null);
+            Arrays.fill(node.children, MIDDLE, ORDER, null);
             ArrayUtils.copyRangeToAnotherArray(tempChildren, 0, MIDDLE + 1, node.children);
-            ArrayUtils.copyRangeToAnotherArray(tempChildren, MIDDLE + 1, tempChildren.length, newNode.children);
+            ArrayUtils.copyRangeToAnotherArray(tempChildren, MIDDLE + 1, ORDER + 1, newNode.children);
             newNode.updateChildren();
         }
 
@@ -208,28 +175,13 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
                 }
             }
         } else {
-            BTreeNode<T> newRoot = new BTreeNode<T>(this.TYPE, ORDER, splitOnValue);
+            MwayNode<T> newRoot = new MwayNode<T>(this.TYPE, ORDER, splitOnValue);
             newRoot.children[0] = node;
             newRoot.children[1] = newNode;
             this.root = newRoot;
             node.parent = newRoot;
             newNode.parent = newRoot;
         }
-    }
-
-    /**
-     * Add multiple values to the tree
-     *
-     * @param vals values which needs to be added in the tree
-     * @return reference to tree object
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public Collection<T> addAll(T... vals) {
-        for (T val : vals) {
-            this.add(val);
-        }
-        return this;
     }
 
     /**
@@ -243,7 +195,8 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
 
         FoundNodeAtIndex<T> found = searchNode(val);
         if (found != null) {
-            BTreeNode<T> node = found.node;
+            final int MIN_KEYS = (int) Math.ceil((double) ORDER / 2) - 1;
+            MwayNode<T> node = found.node;
             int foundIndex = found.index;
             int childIndex = found.childIndex;
 
@@ -251,7 +204,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
                 ArrayUtils.shift(node.values, foundIndex);
             } else {
                 FoundNodeAtIndex<T> replacer = inOrderPredecessor(node, foundIndex);
-                BTreeNode<T> replaceWithNode = replacer.node;
+                MwayNode<T> replaceWithNode = replacer.node;
                 if (replaceWithNode.counter > MIN_KEYS) {
                     node.values[foundIndex] = replaceWithNode.values[replacer.index];
                     replaceWithNode.values[replacer.index] = null;
@@ -266,7 +219,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
             }
             node.counter--;
 
-            BTreeNode<T> leftSibling = null, rightSibling = null, parent;
+            MwayNode<T> leftSibling = null, rightSibling = null, parent;
             while (node.parent != null && node.counter < MIN_KEYS && childIndex >= 0) {
                 parent = node.parent;
                 if (childIndex > 0) {
@@ -317,7 +270,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return null;
     }
 
-    private int getChildIndex(BTreeNode<T> node) {
+    private int getChildIndex(MwayNode<T> node) {
         if (node.parent != null) {
             for (int place = 0; place <= node.parent.counter; place++) {
                 if (node.parent.children[place] == node) {
@@ -328,7 +281,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return -1;
     }
 
-    private FoundNodeAtIndex<T> inOrderPredecessor(BTreeNode<T> node, int index) {
+    private FoundNodeAtIndex<T> inOrderPredecessor(MwayNode<T> node, int index) {
         node = node.children[index];
         while (node != null && node.children[node.counter] != null) {
             index = node.counter;
@@ -337,7 +290,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return new FoundNodeAtIndex<>(node, node.counter - 1, index);
     }
 
-    private FoundNodeAtIndex<T> inOrderSuccessor(BTreeNode<T> node, int index) {
+    private FoundNodeAtIndex<T> inOrderSuccessor(MwayNode<T> node, int index) {
         node = node.children[index + 1];
         index = index + 1;
         while (node != null && node.children[0] != null) {
@@ -347,8 +300,8 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return new FoundNodeAtIndex<>(node, 0, index);
     }
 
-    private void borrowFromLeftSibling(BTreeNode<T> node, BTreeNode<T> leftSibling, int index) {
-        BTreeNode<T> parent = node.parent;
+    private void borrowFromLeftSibling(MwayNode<T> node, MwayNode<T> leftSibling, int index) {
+        MwayNode<T> parent = node.parent;
         ArrayUtils.unshift(node.values, 0, parent.values[index - 1]);
         node.counter++;
         parent.values[index - 1] = leftSibling.values[leftSibling.counter - 1];
@@ -361,8 +314,8 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         leftSibling.counter--;
     }
 
-    private void borrowFromRightSibling(BTreeNode<T> node, BTreeNode<T> rightSibling, int index) {
-        BTreeNode<T> parent = node.parent;
+    private void borrowFromRightSibling(MwayNode<T> node, MwayNode<T> rightSibling, int index) {
+        MwayNode<T> parent = node.parent;
         node.values[node.counter] = parent.values[index];
         node.counter++;
         parent.values[index] = rightSibling.values[0];
@@ -375,8 +328,8 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         rightSibling.counter--;
     }
 
-    private void mergeSibling(BTreeNode<T> node, BTreeNode<T> rightSibling, int index) {
-        BTreeNode<T> parent = node.parent;
+    private void mergeSibling(MwayNode<T> node, MwayNode<T> rightSibling, int index) {
+        MwayNode<T> parent = node.parent;
         node.values[node.counter] = parent.values[index];
         node.counter++;
         ArrayUtils.copyRangeToAnotherArray(rightSibling.values, 0, rightSibling.counter, node.values, node.counter, ORDER - 1);
@@ -389,37 +342,9 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         parent.counter--;
     }
 
-
-    /**
-     * remove multiple elements from the tree
-     *
-     * @param vals values which needs to be removed
-     * @return array of all removed values
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public T[] removeAll(T... vals) {
-        T[] deleted = (T[]) Array.newInstance(TYPE, vals.length);
-        for (int i = 0; i < vals.length; i++) {
-            deleted[i] = this.remove(vals[i]);
-        }
-        return deleted;
-    }
-
-    /**
-     * Search an element in the tree
-     *
-     * @param val value to be searched
-     * @return true/false
-     */
-    @Override
-    public boolean search(T val) {
-        return searchNode(val) != null;
-    }
-
-    private FoundNodeAtIndex<T> searchNode(T val) {
+    FoundNodeAtIndex<T> searchNode(T val) {
         if (val != null) {
-            BTreeNode<T> node = this.root;
+            MwayNode<T> node = this.root;
             int i, comp, till, childIndex = -1;
             while (node != null) {
                 for (i = 0, till = node.counter; i < till; i++) {
@@ -442,8 +367,8 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
     }
 
     private FoundNodeAtIndex<T> findEligibleNode(T value) {
-        BTreeNode<T> node = this.root;
-        BTreeNode<T> prev = node;
+        MwayNode<T> node = this.root;
+        MwayNode<T> prev = node;
         int i, till, foundIndex = 0, comp, childIndex = -1;
         while (node != null) {
             for (i = 0, till = node.counter; i < till; i++) {
@@ -470,16 +395,12 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
 
     @Override
     public String toString() {
-        if (this.root != null) {
-            StringBuilder build = new StringBuilder();
-            build.append("{\"order\":").append(ORDER)
-                    .append(",\"total values\":").append(valuesCount)
-                    .append(",\"bias\":\"").append(LEFT_BIAS ? "left biased" : "right biased").append("\"")
-                    .append(",\"sorting order\":\"").append(ORDER_MUL == -1 ? "inverse sorting order" : "natural sorting order").append("\"")
-                    .append(",\"data\":").append(this.root.toString())
-                    .append("}");
-            return build.toString();
-        } else return "<empty BTree>";
+        String str = super.toString();
+        if (!str.equalsIgnoreCase("<empty tree>") && ORDER % 2 == 0) {
+            str = str.substring(0, str.length() - 1);
+            str += ",\"bias\":\"" + ((ORDER / 2) == MIDDLE ? "left biased" : "right biased") + "\"}";
+        }
+        return str;
     }
 
     @SuppressWarnings("unchecked")
@@ -514,9 +435,9 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
     public T[] levelOrder() {
         T[] level = (T[]) Array.newInstance(TYPE, valuesCount);
         final int arrCount = valuesCount / ((int) Math.ceil((double) ORDER / 2) - 1);
-        BTreeNode<T>[] stack = new BTreeNode[arrCount];
+        MwayNode<T>[] stack = new MwayNode[arrCount];
         int stackCounter = 0, count = 0, stackStart = 0;
-        BTreeNode<T> node;
+        MwayNode<T> node;
         stack[stackCounter++] = this.root;
         while (stackStart < stackCounter) {
             node = stack[stackStart++];
@@ -529,7 +450,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return level;
     }
 
-    private int preOrder(BTreeNode<T> node, T[] pre, int count) {
+    private int preOrder(MwayNode<T> node, T[] pre, int count) {
         for (int i = 0; i < node.counter; i++) {
             pre[count++] = node.values[i];
             if (node.children[i] != null) {
@@ -542,7 +463,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return count;
     }
 
-    private int inOrder(BTreeNode<T> node, T[] in, int count) {
+    private int inOrder(MwayNode<T> node, T[] in, int count) {
         for (int i = 0; i < node.counter; i++) {
             if (node.children[i] != null) {
                 count = inOrder(node.children[i], in, count);
@@ -555,7 +476,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return count;
     }
 
-    private int postOrder(BTreeNode<T> node, T[] post, int count) {
+    private int postOrder(MwayNode<T> node, T[] post, int count) {
         if (node.children[0] != null) {
             count = postOrder(node.children[0], post, count);
         }
@@ -568,7 +489,7 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
         return count;
     }
 
-    private int reverseOrder(BTreeNode<T> node, T[] reverse, int count) {
+    private int reverseOrder(MwayNode<T> node, T[] reverse, int count) {
         for (int i = node.counter; i > 0; i--) {
             if (node.children[i] != null) {
                 count = reverseOrder(node.children[i], reverse, count);
@@ -583,62 +504,11 @@ public class BTree<T extends Comparable<T>> implements Collection<T> {
 
     public int getHeight() {
         int count = -1;
-        BTreeNode<T> node = this.root;
+        MwayNode<T> node = this.root;
         while (node != null) {
             count++;
             node = node.children[0];
         }
         return count;
-    }
-}
-
-class BTreeNode<T> {
-
-    T[] values;
-    BTreeNode<T>[] children;
-
-    BTreeNode<T> parent;
-    int counter;
-
-    @SuppressWarnings("unchecked")
-    BTreeNode(Class<T> type, int order, T value) {
-        values = (T[]) Array.newInstance(type, order - 1);
-        children = new BTreeNode[order];
-        if (value != null) values[counter++] = value;
-    }
-
-    BTreeNode(Class<T> type, int order, T value, BTreeNode<T> parent) {
-        this(type, order, value);
-        this.parent = parent;
-    }
-
-    void updateChildren() {
-        Arrays.stream(children).forEach(child -> {
-            if (child != null) child.parent = this;
-        });
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder build = new StringBuilder();
-        build.append("{\"values\":").append(Arrays.toString(Arrays.stream(values).filter(Objects::nonNull).map(Objects::toString).toArray()));
-        if (children[0] != null)
-            build.append(",\"children\":").append(Arrays.toString(Arrays.stream(children).filter(Objects::nonNull).map(Objects::toString).toArray()));
-        build.append("}");
-        return build.toString();
-    }
-}
-
-
-class FoundNodeAtIndex<T> {
-    BTreeNode<T> node;
-    int index;
-
-    int childIndex;
-
-    FoundNodeAtIndex(BTreeNode<T> node, int index, int childIndex) {
-        this.node = node;
-        this.index = index;
-        this.childIndex = childIndex;
     }
 }

@@ -1,4 +1,4 @@
-package in.zero.collection.link;
+package in.zero.link.tree;
 
 /**
  * Reb-Black Tree: An R-B tree is majorly used in systems where insertion and/or

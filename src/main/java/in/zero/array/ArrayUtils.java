@@ -1,4 +1,6 @@
-package in.zero.collection.array;
+package in.zero.array;
+
+import java.lang.reflect.Array;
 
 public class ArrayUtils {
 
@@ -90,5 +92,28 @@ public class ArrayUtils {
             }
         }
         return -1;
+    }
+
+    public static <T> T[] reverse(T[] arr) {
+        if (arr != null) {
+            T temp;
+            for (int i = 0, j = arr.length - 1; i < j; i++, j--) {
+                temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        return arr;
+    }
+
+    public static <T> T[] reverseCopy(T[] arr, Class<T> type) {
+        if (arr != null) {
+            T[] arrCopy = (T[]) Array.newInstance(type, arr.length);
+            for (int i = 0, j = arr.length - 1; i < arr.length && j >= 0; i++, j--) {
+                arrCopy[j] = arr[i];
+            }
+            return arrCopy;
+        }
+        return null;
     }
 }

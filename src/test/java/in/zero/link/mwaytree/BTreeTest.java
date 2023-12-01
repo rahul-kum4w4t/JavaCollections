@@ -1,4 +1,4 @@
-package in.zero.collection;
+package in.zero.link.mwaytree;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -58,8 +58,8 @@ public class BTreeTest {
         assertEquals("[21, 7, 15, 35, 71, 1, 5, 10, 11, 17, 20, 25, 28, 33, 42, 51, 73, 80, 90]", Arrays.toString(numTreeAsc.levelOrder()), "");
 
         assertEquals(2, numTreeAsc.getHeight(), "Height mismatch");
-        assertEquals("{\"order\":5,\"total values\":19,\"bias\":\"right biased\",\"sorting order\":\"natural sorting order\",\"data\":{\"values\":[21],\"children\":[{\"values\":[7, 15],\"children\":[{\"values\":[1, 5]}, {\"values\":[10, 11]}, {\"values\":[17, 20]}]}, {\"values\":[35, 71],\"children\":[{\"values\":[25, 28, 33]}, {\"values\":[42, 51]}, {\"values\":[73, 80, 90]}]}]}}", numTreeAsc.toString(), "toString value mismatch");
-        assertEquals(19, numTreeAsc.valuesCount, "Values count mismatch");
+        assertEquals("{\"order\":5,\"total values\":19,\"sorting order\":\"natural sorting order\",\"data\":{\"values\":[21],\"children\":[{\"values\":[7, 15],\"children\":[{\"values\":[1, 5]}, {\"values\":[10, 11]}, {\"values\":[17, 20]}]}, {\"values\":[35, 71],\"children\":[{\"values\":[25, 28, 33]}, {\"values\":[42, 51]}, {\"values\":[73, 80, 90]}]}]}}", numTreeAsc.toString(), "toString value mismatch");
+        assertEquals(19, numTreeAsc.getSize(), "Values count mismatch");
 
         assertEquals("[21, 71, 90, 80, 73, 35, 51, 42, 33, 28, 25, 15, 20, 17, 7, 11, 10, 5, 1]", Arrays.toString(numTreeDesc.preOrder()), "");
         assertEquals("[90, 80, 73, 51, 42, 71, 33, 28, 25, 35, 20, 17, 11, 10, 15, 5, 1, 7, 21]", Arrays.toString(numTreeDesc.postOrder()), "");
@@ -67,8 +67,9 @@ public class BTreeTest {
         assertEquals("[21, 71, 35, 15, 7, 90, 80, 73, 51, 42, 33, 28, 25, 20, 17, 11, 10, 5, 1]", Arrays.toString(numTreeDesc.levelOrder()), "");
 
         assertEquals(2, numTreeDesc.getHeight(), "Height mismatch");
-        assertEquals("{\"order\":4,\"total values\":19,\"bias\":\"right biased\",\"sorting order\":\"inverse sorting order\",\"data\":{\"values\":[21],\"children\":[{\"values\":[71, 35],\"children\":[{\"values\":[90, 80, 73]}, {\"values\":[51, 42]}, {\"values\":[33, 28, 25]}]}, {\"values\":[15, 7],\"children\":[{\"values\":[20, 17]}, {\"values\":[11, 10]}, {\"values\":[5, 1]}]}]}}", numTreeDesc.toString(), "toString value mismatch");
-        assertEquals(19, numTreeDesc.valuesCount, "Values count mismatch");
+        System.out.println(numTreeDesc.toString());
+        assertEquals("{\"order\":4,\"total values\":19,\"sorting order\":\"inverse sorting order\",\"data\":{\"values\":[21],\"children\":[{\"values\":[71, 35],\"children\":[{\"values\":[90, 80, 73]}, {\"values\":[51, 42]}, {\"values\":[33, 28, 25]}]}, {\"values\":[15, 7],\"children\":[{\"values\":[20, 17]}, {\"values\":[11, 10]}, {\"values\":[5, 1]}]}]},\"bias\":\"right biased\"}", numTreeDesc.toString(), "toString value mismatch");
+        assertEquals(19, numTreeDesc.getSize(), "Values count mismatch");
     }
 
     @Test
@@ -177,10 +178,10 @@ public class BTreeTest {
         return randomizedList;
     }
 
-    private void testLevel(List<BTreeNode<Integer>> nodes) {
+    private void testLevel(List<MwayNode<Integer>> nodes) {
         int leafCount = 0;
-        List<BTreeNode<Integer>> stack = new ArrayList<>();
-        for (BTreeNode<Integer> node : nodes) {
+        List<MwayNode<Integer>> stack = new ArrayList<>();
+        for (MwayNode<Integer> node : nodes) {
             if (node != null) {
                 assertFalse(Arrays.stream(Arrays.copyOfRange(node.values, 0, node.counter)).anyMatch(Objects::isNull));
                 if (node.children[0] != null) {
@@ -199,7 +200,7 @@ public class BTreeTest {
     }
 
     private void testTreeIntegrityAsc(final BTree<Integer> numTree, Integer value) {
-        List<BTreeNode<Integer>> children = new ArrayList<>();
+        List<MwayNode<Integer>> children = new ArrayList<>();
         children.add(numTree.root);
         testLevel(children);
         Integer[] arr = numTree.inOrder();
@@ -209,7 +210,7 @@ public class BTreeTest {
     }
 
     private void testTreeIntegrityDesc(final BTree<Integer> numTree, Integer value) {
-        List<BTreeNode<Integer>> children = new ArrayList<>();
+        List<MwayNode<Integer>> children = new ArrayList<>();
         children.add(numTree.root);
         testLevel(children);
         Integer[] arr = numTree.inOrder();

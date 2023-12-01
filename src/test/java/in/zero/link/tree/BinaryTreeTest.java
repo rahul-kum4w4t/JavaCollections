@@ -1,4 +1,4 @@
-package in.zero.collection.link;
+package in.zero.link.tree;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,10 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import in.zero.Collection;
+import in.zero.link.tree.BinaryTree;
+import in.zero.link.tree.BinaryTreeNode;
+import in.zero.link.tree.LinkBinaryTreeIterable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import in.zero.collection.Collection;
 
 public class BinaryTreeTest {
 

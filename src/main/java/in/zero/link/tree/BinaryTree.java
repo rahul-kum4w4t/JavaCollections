@@ -1,6 +1,6 @@
-package in.zero.collection.link;
+package in.zero.link.tree;
 
-import in.zero.collection.Collection;
+import in.zero.Collection;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -54,6 +54,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      * @param values Values to be added
      * @return reference to the tree
      */
+    @Override
     @SuppressWarnings("unchecked")
     public BinaryTree<T> addAll(T... values) {
         Arrays.stream(values).forEach(this::add);
@@ -66,6 +67,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      * @param value Value to be added
      * @return Reference to the tree
      */
+    @Override
     public BinaryTree<T> add(T value) {
         addNode(value);
         return this;
@@ -94,6 +96,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      * @param values Values to be removed
      * @return Array of all the removed values
      */
+    @Override
     @SuppressWarnings("unchecked")
     public T[] removeAll(T... values) {
         return (T[]) Arrays.stream(values).map(this::remove).toArray();
@@ -105,6 +108,7 @@ public class BinaryTree<T> implements LinkBinaryTreeIterable<T>, Collection<T> {
      * @param value Value to be removed
      * @return Removed element
      */
+    @Override
     public T remove(T value) {
 
         BinaryTreeNode<T> node = searchNode(value);

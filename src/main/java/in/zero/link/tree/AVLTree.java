@@ -1,4 +1,4 @@
-package in.zero.collection.link;
+package in.zero.link.tree;
 
 /**
  * AVL tree based on link lists Can hold undefined number of values (Only

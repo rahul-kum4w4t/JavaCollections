@@ -1,4 +1,4 @@
-package in.zero.collection.link;
+package in.zero.link.tree;
 
 /**
  * A type of Binary tree where values get stored in sorted order Uses link list

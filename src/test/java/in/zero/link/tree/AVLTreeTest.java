@@ -1,12 +1,9 @@
-package in.zero.collection.link;
+package in.zero.link.tree;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import in.zero.collection.Collection;
-
 import java.util.Arrays;
-import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 

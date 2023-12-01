@@ -1,4 +1,6 @@
-package in.zero.collection.link;
+package in.zero.link.tree;
+
+import in.zero.IllegalOperationException;
 
 /**
  * Heap A Heap is a Complete binary Tree that meets heap Properties- Min Heap:
@@ -39,7 +41,7 @@ public class Heap<T extends Comparable<T>> extends BinaryTree<T> {
 	 */
 	@Override
 	public T remove(T value) {
-		throw new RuntimeException("Operation not supported for heaps");
+		throw new IllegalOperationException("Operation not supported for heaps");
 	}
 
 	/**

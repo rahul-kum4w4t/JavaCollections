@@ -1,4 +1,4 @@
-package in.zero.collection;
+package in.zero;
 
 /**
  * Interface which every collection class needs to implement
