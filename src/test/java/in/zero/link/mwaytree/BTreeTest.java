@@ -67,7 +67,6 @@ public class BTreeTest {
         assertEquals("[21, 71, 35, 15, 7, 90, 80, 73, 51, 42, 33, 28, 25, 20, 17, 11, 10, 5, 1]", Arrays.toString(numTreeDesc.levelOrder()), "");
 
         assertEquals(2, numTreeDesc.getHeight(), "Height mismatch");
-        System.out.println(numTreeDesc.toString());
         assertEquals("{\"order\":4,\"total values\":19,\"sorting order\":\"inverse sorting order\",\"data\":{\"values\":[21],\"children\":[{\"values\":[71, 35],\"children\":[{\"values\":[90, 80, 73]}, {\"values\":[51, 42]}, {\"values\":[33, 28, 25]}]}, {\"values\":[15, 7],\"children\":[{\"values\":[20, 17]}, {\"values\":[11, 10]}, {\"values\":[5, 1]}]}]},\"bias\":\"right biased\"}", numTreeDesc.toString(), "toString value mismatch");
         assertEquals(19, numTreeDesc.getSize(), "Values count mismatch");
     }

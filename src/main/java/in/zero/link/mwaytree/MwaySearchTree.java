@@ -41,7 +41,7 @@ class MwaySearchTree<T extends Comparable<T>> implements Collection<T> {
         if (order >= 3) {
             ORDER = order;
         } else {
-            throw new IllegalArgumentException("Order for BTree must be >= 3");
+            throw new IllegalArgumentException("Order for " + this.getClass().getSimpleName() + " must be >= 3");
         }
 
         ORDER_MUL = inverse ? -1 : 1;
@@ -56,9 +56,60 @@ class MwaySearchTree<T extends Comparable<T>> implements Collection<T> {
         }
     }
 
+    MwayNode<T> createNode(T value, MwayNode<T> parent) {
+        return new MwayNode<>(this.TYPE, this.ORDER, value, parent);
+    }
+
+    void insertAndSplit(final MwayNode<T> node, final int insertIndex, final T value, final MwayNode<T> right) {
+        MwayNode<T> newNode = createNode(value, node);
+        node.children[insertIndex] = newNode;
+    }
+
     @Override
-    public Collection<T> add(T val) {
-        return null;
+    public Collection<T> add(T value) {
+        if (value != null) {
+            if (root == null) {
+                this.root = createNode(value, null);
+            } else {
+                FoundNodeAtIndex<T> found = findEligibleNode(value);
+                if ((found.node.counter + 1) < ORDER) {
+                    shiftAndInsertAt(found.node, found.index, value, null);
+                } else {
+                    insertAndSplit(found.node, found.index, value, null);
+                }
+            }
+            valuesCount++;
+        } else {
+            throw new IllegalArgumentException(this.getClass().getSimpleName() + " can't store null values");
+        }
+        return this;
+    }
+
+    FoundNodeAtIndex<T> findEligibleNode(T value) {
+        MwayNode<T> node = this.root;
+        MwayNode<T> prev = node;
+        int i, till, foundIndex = 0, comp, childIndex = -1;
+        while (node != null) {
+            for (i = 0, till = node.counter; i < till; i++) {
+                comp = this.ORDER_MUL * node.values[i].compareTo(value);
+                if (comp > 0) {
+                    prev = node;
+                    childIndex = foundIndex;
+                    node = node.children[i];
+                    foundIndex = i;
+                    break;
+                } else if (comp == 0) {
+                    throw new IllegalArgumentException(this.getClass().getSimpleName() + " can't store duplicate values");
+                }
+            }
+            if (i == till) {
+                prev = node;
+                childIndex = foundIndex;
+                node = node.children[i];
+                foundIndex = i;
+            }
+        }
+        return new FoundNodeAtIndex<>(prev, foundIndex, childIndex);
     }
 
     /**
@@ -109,7 +160,134 @@ class MwaySearchTree<T extends Comparable<T>> implements Collection<T> {
     }
 
     FoundNodeAtIndex<T> searchNode(T val) {
+        if (val != null) {
+            MwayNode<T> node = this.root;
+            int i, comp, till, childIndex = -1;
+            while (node != null) {
+                for (i = 0, till = node.counter; i < till; i++) {
+                    comp = this.ORDER_MUL * node.values[i].compareTo(val);
+                    if (comp > 0) {
+                        if (node.children[i] != null) {
+                            childIndex = i;
+                            node = node.children[i];
+                            break;
+                        } else {
+                            return null;
+                        }
+                    } else if (comp == 0) {
+                        return new FoundNodeAtIndex<>(node, i, childIndex);
+                    }
+                }
+                if (i == till) {
+                    if (node.children[i] != null) {
+                        childIndex = i;
+                        node = node.children[i];
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T[] preOrder() {
+        T[] pre = (T[]) Array.newInstance(TYPE, valuesCount);
+        if (this.root != null) preOrder(this.root, pre, 0);
+        return pre;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T[] postOrder() {
+        T[] post = (T[]) Array.newInstance(TYPE, valuesCount);
+        if (this.root != null) postOrder(this.root, post, 0);
+        return post;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T[] inOrder() {
+        T[] in = (T[]) Array.newInstance(TYPE, valuesCount);
+        if (this.root != null) inOrder(this.root, in, 0);
+        return in;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T[] reverseOrder() {
+        T[] reverse = (T[]) Array.newInstance(TYPE, valuesCount);
+        if (this.root != null) reverseOrder(this.root, reverse, 0);
+        return reverse;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T[] levelOrder() {
+        T[] level = (T[]) Array.newInstance(TYPE, valuesCount);
+        final int arrCount = valuesCount / ((int) Math.ceil((double) ORDER / 2) - 1);
+        MwayNode<T>[] stack = new MwayNode[arrCount];
+        int stackCounter = 0, count = 0, stackStart = 0;
+        MwayNode<T> node;
+        stack[stackCounter++] = this.root;
+        while (stackStart < stackCounter) {
+            node = stack[stackStart++];
+            for (int i = 0; i < node.counter; i++) {
+                level[count++] = node.values[i];
+                if (node.children[i] != null) stack[stackCounter++] = node.children[i];
+            }
+            if (node.children[node.counter] != null) stack[stackCounter++] = node.children[node.counter];
+        }
+        return level;
+    }
+
+    private int preOrder(MwayNode<T> node, T[] pre, int count) {
+        for (int i = 0; i < node.counter; i++) {
+            pre[count++] = node.values[i];
+            if (node.children[i] != null) {
+                count = preOrder(node.children[i], pre, count);
+            }
+        }
+        if (node.children[node.counter] != null) {
+            count = preOrder(node.children[node.counter], pre, count);
+        }
+        return count;
+    }
+
+    private int inOrder(MwayNode<T> node, T[] in, int count) {
+        for (int i = 0; i < node.counter; i++) {
+            if (node.children[i] != null) {
+                count = inOrder(node.children[i], in, count);
+            }
+            in[count++] = node.values[i];
+        }
+        if (node.children[node.counter] != null) {
+            count = inOrder(node.children[node.counter], in, count);
+        }
+        return count;
+    }
+
+    private int postOrder(MwayNode<T> node, T[] post, int count) {
+        if (node.children[0] != null) {
+            count = postOrder(node.children[0], post, count);
+        }
+        for (int i = 0; i < node.counter; i++) {
+            if (node.children[i + 1] != null) {
+                count = postOrder(node.children[i + 1], post, count);
+            }
+            post[count++] = node.values[i];
+        }
+        return count;
+    }
+
+    private int reverseOrder(MwayNode<T> node, T[] reverse, int count) {
+        for (int i = node.counter; i > 0; i--) {
+            if (node.children[i] != null) {
+                count = reverseOrder(node.children[i], reverse, count);
+            }
+            reverse[count++] = node.values[i - 1];
+        }
+        if (node.children[0] != null) {
+            count = reverseOrder(node.children[0], reverse, count);
+        }
+        return count;
     }
 
     public int getSize() {
@@ -124,7 +302,7 @@ class MwaySearchTree<T extends Comparable<T>> implements Collection<T> {
                     .append(",\"sorting order\":\"").append(ORDER_MUL == -1 ? "inverse sorting order" : "natural sorting order").append("\"")
                     .append(",\"data\":").append(this.root.toString())
                     .append("}").toString();
-        } else return "<empty tree>";
+        } else return "<empty_tree>";
     }
 }
 
@@ -134,7 +312,9 @@ class MwayNode<T extends Comparable<T>> {
 
     MwayNode<T> parent;
     int counter;
-    MwayNode(){}
+
+    MwayNode() {
+    }
 
     @SuppressWarnings("unchecked")
     MwayNode(Class<T> type, int order, T value) {
@@ -158,8 +338,20 @@ class MwayNode<T extends Comparable<T>> {
     public String toString() {
         StringBuilder build = new StringBuilder();
         build.append("{\"values\":").append(Arrays.toString(Arrays.stream(values).filter(Objects::nonNull).map(Objects::toString).toArray()));
-        if (children[0] != null)
-            build.append(",\"children\":").append(Arrays.toString(Arrays.stream(children).filter(Objects::nonNull).map(Objects::toString).toArray()));
+        StringBuilder childrenStr = new StringBuilder();
+        int index = 0;
+        for (MwayNode<T> child : children) {
+            if (child != null) {
+                childrenStr.append("\"").append(index).append("\":").append(child).append(",");
+            }
+            index++;
+        }
+        if (childrenStr.length() > 0) {
+            childrenStr.deleteCharAt(childrenStr.length() - 1);
+            childrenStr.insert(0, "{");
+            childrenStr.append("}");
+            build.append(",\"children\":").append(childrenStr);
+        }
         build.append("}");
         return build.toString();
     }

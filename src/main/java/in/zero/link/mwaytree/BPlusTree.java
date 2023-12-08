@@ -138,33 +138,6 @@ public class BPlusTree<T extends Comparable<T>> extends MwaySearchTree<T> {
         return this;
     }
 
-    private FoundNodeAtIndex<T> findEligibleNode(T value) {
-        BPlusTreeNode<T> node = (BPlusTreeNode<T>) this.root;
-        BPlusTreeNode<T> prev = node;
-        int i, till, foundIndex = 0, comp, childIndex = -1;
-        while (node != null) {
-            for (i = 0, till = node.counter; i < till; i++) {
-                comp = this.ORDER_MUL * node.values[i].compareTo(value);
-                if (comp > 0) {
-                    prev = node;
-                    childIndex = foundIndex;
-                    node = node.children[i];
-                    foundIndex = i;
-                    break;
-                } else if (comp == 0) {
-                    throw new IllegalArgumentException("BPlusTree can't store duplicate values");
-                }
-            }
-            if (i == till) {
-                prev = node;
-                childIndex = foundIndex;
-                node = node.children[node.counter];
-                foundIndex = till;
-            }
-        }
-        return new FoundNodeAtIndex<>(prev, foundIndex, childIndex);
-    }
-
     void shiftAndInsertAt(final BPlusTreeNode<T> node, final int insertIndex, final T value, final BPlusTreeNode<T> right) {
         ArrayUtils.unshift(node.values, insertIndex, value, node.counter);
         node.counter++;
