@@ -3,9 +3,12 @@ package in.zero.link.mwaytree;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+import static in.zero.utils.Sequence.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -97,12 +100,12 @@ public class BTreeTest {
 
         final BTree<Integer> numTree12RightBias = new BTree<>(Integer.class, 12);
         final BTree<Integer> numTree12LeftBias = new BTree<>(Integer.class, true, 12);
-        getRandomSequenceInRange(0, 10_000).forEach(val -> {
+        getRandIntSeqInRange(0, 10_000).forEach(val -> {
             numTree12RightBias.add(val);
             testTreeIntegrityAsc(numTree12RightBias, val);
         });
         assertEquals(10_000, Arrays.stream(numTree12RightBias.inOrder()).filter(Objects::nonNull).count(), "elements count mismatch");
-        getRandomSequenceInRange(0, 10_000).forEach(val -> {
+        getRandIntSeqInRange(0, 10_000).forEach(val -> {
             numTree12LeftBias.add(val);
             testTreeIntegrityAsc(numTree12LeftBias, val);
         });
@@ -112,7 +115,7 @@ public class BTreeTest {
     @Test
     void testSearch() {
 
-        List<Integer> data = getRandomSequenceInRange(0, 1_000);
+        List<Integer> data = getRandIntSeqInRange(0, 1_000);
 
         final BTree<Integer> numTree17RightBias = new BTree<>(Integer.class, 17);
         data.forEach(numTree17RightBias::add);
@@ -132,7 +135,7 @@ public class BTreeTest {
 
     @Test
     void removalTest() {
-        List<Integer> data = getRandomSequenceInRange(0, 1_000);
+        List<Integer> data = getRandIntSeqInRange(0, 1_000);
 
         final BTree<Integer> numTree5 = new BTree<>(Integer.class, 5);
         data.forEach(numTree5::add);
@@ -162,19 +165,13 @@ public class BTreeTest {
         });
 
         final BTree<Integer> numTree8 = new BTree<>(Integer.class, 8);
-        getRandomSequenceInRange(0, 10_000).forEach(numTree8::add);
+        getRandIntSeqInRange(0, 10_000).forEach(numTree8::add);
 
         data.forEach(val -> {
             assertEquals(val, numTree8.remove(val), "After removal, value not returned");
             assertFalse(numTree8.search(val), "After removal value still present in the tree");
             testTreeIntegrityAsc(numTree8, val);
         });
-    }
-
-    private List<Integer> getRandomSequenceInRange(int start, int end) {
-        List<Integer> randomizedList = IntStream.range(start, end).boxed().collect(Collectors.toList());
-        Collections.shuffle(randomizedList);
-        return randomizedList;
     }
 
     private void testLevel(List<MwayNode<Integer>> nodes) {

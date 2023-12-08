@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 class MwaySearchTree<T extends Comparable<T>> implements Collection<T> {
+
     final int ORDER;
 
     final Class<T> TYPE;
@@ -129,7 +130,45 @@ class MwaySearchTree<T extends Comparable<T>> implements Collection<T> {
 
     @Override
     public T remove(T val) {
-        return null;
+        FoundNodeAtIndex<T> fNode = searchNode(val);
+        if (fNode != null) {
+            rm(fNode);
+            return val;
+        } else {
+            return null;
+        }
+    }
+
+    public void rm(FoundNodeAtIndex<T> fNode) {
+
+        MwayNode<T> node = fNode.node;
+        int index = fNode.index;
+        MwayNode<T> lNode = node.children[index];
+        MwayNode<T> rNode = node.children[index + 1];
+        if (lNode != null) {
+            node.values[index] = lNode.values[lNode.counter - 1];
+            fNode.node = lNode;
+            fNode.index = lNode.counter - 1;
+            fNode.childIndex = index;
+            rm(fNode);
+        } else if (rNode != null) {
+            node.values[index] = rNode.values[0];
+            fNode.node = rNode;
+            fNode.index = 0;
+            fNode.childIndex = index + 1;
+            rm(fNode);
+        } else {
+            ArrayUtils.shift(node.values, index);
+            ArrayUtils.shift(node.children, index);
+            node.counter--;
+            if (node.counter == 0) {
+                if (node == root) {
+                    root = null;
+                } else {
+                    node.parent.children[fNode.childIndex] = null;
+                }
+            }
+        }
     }
 
     /**
@@ -294,14 +333,26 @@ class MwaySearchTree<T extends Comparable<T>> implements Collection<T> {
         return valuesCount;
     }
 
+    @SuppressWarnings("unchecked")
+    public int getHeight() {
+        int count = -1;
+        MwayNode<T>[] stack = new MwayNode[1];
+        stack[0] = this.root;
+        while (stack.length > 0 && stack[0] != null) {
+            count++;
+            stack = Arrays.stream(stack).flatMap(n -> Arrays.stream(n.children)).filter(Objects::nonNull).toArray(MwayNode[]::new);
+        }
+        return count;
+    }
+
     @Override
     public String toString() {
         if (this.root != null) {
-            return new StringBuilder("{\"order\":").append(ORDER)
-                    .append(",\"total values\":").append(valuesCount)
-                    .append(",\"sorting order\":\"").append(ORDER_MUL == -1 ? "inverse sorting order" : "natural sorting order").append("\"")
-                    .append(",\"data\":").append(this.root.toString())
-                    .append("}").toString();
+            return "{\"order\":" + ORDER +
+                    ",\"total values\":" + valuesCount +
+                    ",\"sorting order\":\"" + (ORDER_MUL == -1 ? "inverse sorting order" : "natural sorting order") + "\"" +
+                    ",\"data\":" + this.root +
+                    "}";
         } else return "<empty_tree>";
     }
 }

@@ -90,6 +90,7 @@ public class MwaySearchTreeTest {
             assertTrue(numTree12LeftBias.search(val));
         });
         assertEquals(10_000, Arrays.stream(numTree12LeftBias.inOrder()).filter(Objects::nonNull).count(), "elements count mismatch");
+
     }
 
     @Test
