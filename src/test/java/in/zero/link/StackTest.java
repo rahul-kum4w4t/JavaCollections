@@ -8,13 +8,13 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StackTest {
+class StackTest {
 
     final static Integer[] testData = {10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 71, 35};
 
     @Test
     void testStackOperations() {
-        Stack<Integer> stack = new Stack<Integer>();
+        Stack<Integer> stack = new Stack<>();
 
         assertTrue(stack.isEmpty(), "Stack should be empty at stack creation");
 

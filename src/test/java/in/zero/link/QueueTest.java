@@ -4,11 +4,10 @@ import in.zero.IllegalOperationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class QueueTest {
+class QueueTest {
 
     final static Integer[] testData = {10, 1, 20, 15, 25, 17, 7, 21, 5, 33, 73, 71, 35};
 
@@ -33,7 +32,7 @@ public class QueueTest {
 
         assertEquals(0, queue.getCount(), "Queue data count must be zero after data removal");
 
-        queue.enqueueAll(1,2,3,4,5);
+        queue.enqueueAll(1, 2, 3, 4, 5);
 
         assertEquals(5, queue.getCount(), "Enqueue all should add all the 5 elements to the queue");
     }
