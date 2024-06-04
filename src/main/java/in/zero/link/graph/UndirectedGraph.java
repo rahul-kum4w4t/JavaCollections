@@ -9,6 +9,7 @@ import in.zero.array.Stack;
 
 /**
  * Generic type undirected Graph DS
+ *
  * @param <T> Generic type
  * @author rahul.kumawat
  * @since 22-05-2024
@@ -240,45 +241,41 @@ public class UndirectedGraph<T> {
         g.add(1000, 1);
         g.add(1, 100);
         g.add(50, 150);
-        g.add(100, 200);
         g.add(150, 250);
-        g.add(200, 300);
         g.add(250, 350);
-        g.add(300, 400);
         g.add(350, 450);
-        g.add(400, 500);
         g.add(450, 550);
-        g.add(500, 600);
         g.add(550, 650);
-        g.add(600, 700);
         g.add(650, 750);
-        g.add(700, 800);
         g.add(750, 850);
-        g.add(800, 900);
         g.add(850, 950);
-        g.add(900, 1000);
 
 
         System.out.println("************ Graph ****************");
         System.out.println(g);
+        System.out.println("*********** Neighbours ************");
+        System.out.println(g.getNeighbours(1));
         System.out.println("************ DFT ****************");
-        System.out.println(g.depthFirstTraversal(4).stream().map(String::valueOf).collect(Collectors.joining(", ")));
+        System.out.println(g.depthFirstTraversal(1).stream().map(String::valueOf).collect(Collectors.joining(", ")));
         System.out.println("************ BFT ****************");
-        System.out.println(g.breadthFirstTraversal(4).stream().map(String::valueOf).collect(Collectors.joining(", ")));
+        System.out.println(g.breadthFirstTraversal(1).stream().map(String::valueOf).collect(Collectors.joining(", ")));
 
         long start;
         System.out.println("************ Find Path Recursive ****************");
         start = System.currentTimeMillis();
-        System.out.println(g.findPathRecr(1, 7).stream().map(path -> path.stream().map(String::valueOf).collect(Collectors.joining(", "))).collect(Collectors.joining("\n")));
-        System.out.println("Execution Time (ns): " + (System.currentTimeMillis() - start));
+        System.out.println(g.findPathRecr(1, 1000).stream().map(path -> path.stream().map(String::valueOf).collect(Collectors.joining(", "))).collect(Collectors.joining("\n")));
+        System.out.println("Execution Time (ms): " + (System.currentTimeMillis() - start));
         System.out.println("************ Find Path Iterative ****************");
         start = System.currentTimeMillis();
-        System.out.println(g.findPathIter(1, 7).stream().map(path -> path.stream().map(String::valueOf).collect(Collectors.joining(", "))).collect(Collectors.joining("\n")));
-        System.out.println("Execution Time (ns): " + (System.currentTimeMillis() - start));
+        System.out.println(g.findPathIter(1, 1000).stream().map(path -> path.stream().map(String::valueOf).collect(Collectors.joining(", "))).collect(Collectors.joining("\n")));
+        System.out.println("Execution Time (ms): " + (System.currentTimeMillis() - start));
+
+        System.out.println("***************** Shortest path ***************");
+        System.out.printf(g.shortestPath(4, 1000).stream().map(path -> path.stream().map(String::valueOf).collect(Collectors.joining(", "))).collect(Collectors.joining("\n")));
 
     }
 
-    private final Map<T, List<T>> nodes;
+    private final Map<T, Set<Edge<T>>> nodes;
 
     public UndirectedGraph() {
         nodes = new HashMap<>();
@@ -286,15 +283,17 @@ public class UndirectedGraph<T> {
 
     /**
      * add any node to the graph
+     *
      * @param src
      * @param dest
      */
     public void add(T src, T dest) {
         if (src != null && dest != null) {
-            nodes.computeIfAbsent(src, k -> new ArrayList<>());
-            nodes.computeIfAbsent(dest, k -> new ArrayList<>());
-            nodes.get(src).add(dest);
-            nodes.get(dest).add(src);
+            nodes.computeIfAbsent(src, k -> new HashSet<>());
+            nodes.computeIfAbsent(dest, k -> new HashSet<>());
+            Edge<T> edge = new Edge<>(src, dest);
+            nodes.get(src).add(edge);
+            if (src != dest) nodes.get(dest).add(edge);
         } else {
             throw new IllegalArgumentException("source and destination nodes must not be null");
         }
@@ -302,22 +301,25 @@ public class UndirectedGraph<T> {
 
     /**
      * Provides string conversion for graph, in the form of edges
+     *
      * @return
      */
     public String toString() {
-        return nodes.entrySet().stream().map(entry -> {
-            final Object key = entry.getKey();
-            return entry.getValue().stream().map(v -> "{" + key + "," + v + "}").collect(Collectors.joining(","));
-        }).collect(Collectors.joining(","));
+        return nodes.values().stream().flatMap(Collection::stream).map(Edge::toString).collect(Collectors.joining(","));
     }
 
     /**
      * Provides neighbours of any node/vertex
+     *
      * @param src node under consideration
      * @return all the unique neighbours
      */
-    public Set<T> getNeighbours(T src) {
-        return new HashSet<>(nodes.getOrDefault(src, new ArrayList<>()));
+    public List<T> getNeighbours(T src) {
+        if (src != null && nodes.containsKey(src)) {
+            return nodes.get(src).stream().map(edge -> edge.src.equals(src) ? edge.dest : edge.src).collect(Collectors.toList());
+        } else {
+            return new ArrayList<>(0);
+        }
     }
 
     /**
@@ -368,7 +370,7 @@ public class UndirectedGraph<T> {
         visited.add(currNode);
         int neighIndex = -1;
         while (currNode != null) {
-            List<T> neigh = nodes.get(currNode);
+            List<T> neigh = this.getNeighbours(currNode);
             while ((++neighIndex) < neigh.size() && visited.contains(neigh.get(neighIndex))) ;
             if (neighIndex < neigh.size()) {
                 stack.push(new Object[]{currNode, neighIndex});
@@ -433,7 +435,7 @@ public class UndirectedGraph<T> {
         traversal.add(currNode);
 
         while (!queue.isEmpty()) {
-            for (T n : nodes.get(queue.dequeue())) {
+            for (T n : this.getNeighbours(queue.dequeue())) {
                 if (!visited.contains(n)) {
                     queue.enqueue(n);
                     visited.add(n);
@@ -463,13 +465,13 @@ public class UndirectedGraph<T> {
         int neighIndex = -1;
 
         while (src != null) {
-            List<T> neigh = nodes.get(src);
+            List<T> neigh = this.getNeighbours(src);
             while ((++neighIndex) < neigh.size() && visited.contains(neigh.get(neighIndex))) ;
             if (neighIndex < neigh.size()) {
                 stack.push(new Object[]{src, neighIndex});
                 src = neigh.get(neighIndex);
                 path.add(src);
-                if (src == dest) {
+                if (src.equals(dest)) {
                     paths.add(new ArrayList<>(path));
                     path.remove(src);
                     Object[] cache = stack.pop();
@@ -502,10 +504,8 @@ public class UndirectedGraph<T> {
      */
     public List<List<T>> findPathRecr(T src, T dest) {
         if (src != null && dest != null) {
-            Set<T> visited = new HashSet<>(nodes.size());
-            List<T> path = new ArrayList<>(nodes.size());
             List<List<T>> paths = new ArrayList<>();
-            findPathRecur(src, dest, visited, path, paths);
+            findPathRecur(src, dest, new HashSet<>(nodes.size()), new ArrayList<>(nodes.size()), paths);
             return paths;
         }
         return new ArrayList<>(0);
@@ -513,14 +513,14 @@ public class UndirectedGraph<T> {
 
     private void findPathRecur(T currNode, T dest, Set<T> visited, List<T> path, List<List<T>> paths) {
 
-        if (currNode == dest) {
+        if (currNode.equals(dest)) {
             path.add(currNode);
             paths.add(new ArrayList<>(path));
             path.remove(currNode);
         } else {
             visited.add(currNode);
             path.add(currNode);
-            for (T node : nodes.get(currNode)) {
+            for (T node : this.getNeighbours(currNode)) {
                 if (!visited.contains(node)) {
                     findPathRecur(node, dest, visited, path, paths);
                 }
@@ -528,5 +528,59 @@ public class UndirectedGraph<T> {
             visited.remove(currNode);
             path.remove(currNode);
         }
+    }
+
+    public List<List<T>> shortestPath(T src, T dest) {
+        List<List<T>> allPaths = findPathRecr(src, dest);
+        List<List<T>> shortestPath = new ArrayList<>();
+        int shortestPathLength = Integer.MAX_VALUE;
+        for (List<T> path : allPaths) {
+            if (path.size() < shortestPathLength) {
+                if (!shortestPath.isEmpty()) {
+                    shortestPath = new ArrayList<>();
+                }
+                shortestPath.add(path);
+                shortestPathLength = path.size();
+            } else if (path.size() == shortestPathLength) {
+                shortestPath.add(path);
+            }
+        }
+
+        return shortestPath;
+    }
+}
+
+/**
+ * Primary element of a graph
+ *
+ * @param <T>
+ */
+class Edge<T> {
+    T src;
+    T dest;
+
+    Edge(T src, T dest) {
+        this.src = src;
+        this.dest = dest;
+    }
+
+    @Override
+    public int hashCode() {
+        return (src.hashCode() % 10000) * (dest.hashCode() % 10000);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean equals(Object other) {
+        if (other != null) {
+            Edge<T> sec = (Edge<T>) other;
+            return (this.src == sec.src && this.dest == sec.dest) || (this.dest == sec.src && this.src == sec.dest);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + src.toString() + ", " + dest.toString() + "}";
     }
 }
